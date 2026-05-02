@@ -82,16 +82,6 @@
   "fonts": {
     "family": "Inter"
   },
-  "banner": {
-    "content": "asdasdasdasdasdfasd",
-    "dismissible": false
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/test",
-      "reddit": "https://test.com"
-    }
-  },
   "icons": {
     "library": "tabler"
   }
