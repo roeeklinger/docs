@@ -1,0 +1,202 @@
+---
+title: "Receive BitKit job results with webhooks"
+description: "Configure webhooks to receive real-time HTTP callbacks when BitKit jobs complete. Includes payload format, security verification, and retry behavior."
+---
+
+Webhooks let you react to BitKit job completions without polling the API. When a scheduled job finishes a run, BitKit sends a signed HTTP POST request to the URL you registered. Your server receives the payload, verifies the signature, and processes the results in real time.
+
+## How webhooks work
+
+<Steps>
+  <Step title="Register a webhook endpoint">
+    Provide BitKit with the HTTPS URL of your server endpoint. You can do this in the dashboard under **Settings → Webhooks**, or by calling the API directly.
+  </Step>
+  <Step title="Attach the webhook to a job">
+    When creating a job, set the `webhook_url` field. BitKit calls your endpoint after every run of that job.
+  </Step>
+  <Step title="Receive and verify the payload">
+    BitKit POSTs a JSON payload to your endpoint and signs the request with an HMAC-SHA256 signature in the `X-BitKit-Signature` header. Verify it before processing.
+  </Step>
+  <Step title="Respond with a 2xx status">
+    Return any 2xx HTTP status within 10 seconds to acknowledge receipt. If BitKit does not receive a 2xx, it retries the delivery.
+  </Step>
+</Steps>
+
+---
+
+## Registering a webhook
+
+**Via the dashboard:** Go to **Settings → Webhooks** and click **Add endpoint**. Enter your HTTPS URL and select the events to subscribe to.
+
+**Via the API:**
+
+```bash
+curl --request POST \
+  --url https://api.bitkit.dev/v1/webhooks \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "url": "https://yourapp.example.com/webhooks/bitkit",
+    "events": ["job.completed"]
+  }'
+```
+
+```json
+{
+  "id": "wh_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "url": "https://yourapp.example.com/webhooks/bitkit",
+  "events": ["job.completed"],
+  "created_at": "2026-04-30T14:10:00Z"
+}
+```
+
+<Tip>
+  Copy the webhook secret shown once at creation time and store it securely. You will use it to verify signatures. If you lose it, rotate it from **Settings → Webhooks**.
+</Tip>
+
+---
+
+## Webhook payload format
+
+BitKit sends a JSON body with the following fields on every `job.completed` event:
+
+```json
+{
+  "event": "job.completed",
+  "job_id": "job_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "run_id": "run_01hx9jk2p4n5m6r7s8t9u0v1x",
+  "status": "completed",
+  "result_url": "https://api.bitkit.dev/v1/storage/job_01hx9jk2p4n5m6r7s8t9u0v1w%2F2026-04-30T08%3A00%3A00Z.json",
+  "timestamp": "2026-04-30T08:01:22Z"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event` | string | Always `job.completed` for job completion events. |
+| `job_id` | string | The ID of the job that ran. |
+| `run_id` | string | A unique ID for this specific run. |
+| `status` | string | `completed` or `failed`. |
+| `result_url` | string | URL to download the full result JSON. |
+| `timestamp` | string | ISO 8601 time the run finished. |
+
+---
+
+## Verifying webhook signatures
+
+<Warning>
+  Always verify the `X-BitKit-Signature` header before processing a webhook payload. Without verification, anyone can send fake payloads to your endpoint.
+</Warning>
+
+BitKit signs each request using HMAC-SHA256 with your webhook secret. The signature is sent in the `X-BitKit-Signature` header in the format `sha256=<hex_digest>`.
+
+To verify: compute the HMAC-SHA256 of the raw request body using your webhook secret, then compare the result to the value in the header using a constant-time comparison.
+
+<CodeGroup>
+
+```python webhook_handler.py
+import hashlib
+import hmac
+from flask import Flask, request, abort
+
+app = Flask(__name__)
+
+BITKIT_WEBHOOK_SECRET = "your_webhook_secret_here"
+
+
+def verify_signature(payload: bytes, signature_header: str) -> bool:
+    expected = hmac.new(
+        BITKIT_WEBHOOK_SECRET.encode(),
+        payload,
+        hashlib.sha256,
+    ).hexdigest()
+    expected_header = f"sha256={expected}"
+    return hmac.compare_digest(expected_header, signature_header)
+
+
+@app.route("/webhooks/bitkit", methods=["POST"])
+def handle_webhook():
+    signature = request.headers.get("X-BitKit-Signature", "")
+    payload = request.get_data()
+
+    if not verify_signature(payload, signature):
+        abort(400, "Invalid signature")
+
+    event = request.json
+    job_id = event["job_id"]
+    status = event["status"]
+    result_url = event.get("result_url")
+
+    print(f"Job {job_id} finished with status: {status}")
+    if result_url:
+        print(f"Download results from: {result_url}")
+
+    return "", 200
+```
+
+```javascript webhook-handler.js
+const express = require('express');
+const crypto = require('crypto');
+
+const app = express();
+const BITKIT_WEBHOOK_SECRET = process.env.BITKIT_WEBHOOK_SECRET;
+
+app.use('/webhooks/bitkit', express.raw({ type: 'application/json' }));
+
+function verifySignature(payload, signatureHeader) {
+  const expected = `sha256=${crypto
+    .createHmac('sha256', BITKIT_WEBHOOK_SECRET)
+    .update(payload)
+    .digest('hex')}`;
+  return crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(signatureHeader),
+  );
+}
+
+app.post('/webhooks/bitkit', (req, res) => {
+  const signature = req.headers['x-bitkit-signature'] || '';
+
+  if (!verifySignature(req.body, signature)) {
+    return res.status(400).send('Invalid signature');
+  }
+
+  const event = JSON.parse(req.body);
+  const { job_id, status, result_url } = event;
+
+  console.log(`Job ${job_id} finished with status: ${status}`);
+  if (result_url) {
+    console.log(`Download results from: ${result_url}`);
+  }
+
+  res.status(200).send();
+});
+
+app.listen(3000, () => console.log('Listening on port 3000'));
+```
+
+</CodeGroup>
+
+---
+
+## Responding to webhooks
+
+Your endpoint must return a `2xx` HTTP response within **10 seconds** of receiving the request. BitKit considers any other status code, a timeout, or a network error as a failed delivery.
+
+<Tip>
+  If your processing logic takes longer than 10 seconds, acknowledge the webhook immediately by returning `200 OK`, then handle the result asynchronously in a background job or queue.
+</Tip>
+
+---
+
+## Retry behavior
+
+When a delivery fails, BitKit retries up to **3 times** using exponential backoff:
+
+| Attempt | Delay |
+|---------|-------|
+| 1st retry | 1 minute |
+| 2nd retry | 5 minutes |
+| 3rd retry | 30 minutes |
+
+After 3 failed attempts, the delivery is marked as failed. You can view delivery history and manually retry from **Settings → Webhooks → Delivery logs** in the dashboard.

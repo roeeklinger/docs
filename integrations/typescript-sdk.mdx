@@ -1,0 +1,222 @@
+---
+title: "BitKit TypeScript SDK installation and usage"
+description: "Install and use the BitKit TypeScript SDK to query the open web, schedule jobs, and stream results into your Node.js or browser applications."
+---
+
+The BitKit TypeScript SDK provides a fully typed client for the BitKit API, making it straightforward to submit queries, manage scheduled jobs, and download results in Node.js or browser environments. All methods return typed promises, so you get autocomplete and compile-time safety out of the box.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @bitkit/sdk
+```
+
+```bash pnpm
+pnpm add @bitkit/sdk
+```
+
+```bash yarn
+yarn add @bitkit/sdk
+```
+
+</CodeGroup>
+
+<Note>
+  The SDK automatically reads your API key from the `BITKIT_API_KEY` environment variable. Set it once and you can initialize the client without passing `apiKey` directly.
+
+  ```bash
+  export BITKIT_API_KEY="your_api_key_here"
+  ```
+</Note>
+
+## Initialization
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+```
+
+You can also pass the key explicitly:
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: 'YOUR_API_KEY' });
+```
+
+---
+
+## Submit a query
+
+Use `client.query()` to submit a natural language prompt and await the completed result.
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+const result = await client.query({
+  prompt: 'How many times was Acme mentioned on X this week?',
+  sources: ['x', 'reddit'],
+});
+
+console.log(result.summary);
+console.log(`Total results: ${result.totalResults}`);
+```
+
+With an optional date range and result limit:
+
+```typescript
+import { BitKit, QueryOptions } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+const options: QueryOptions = {
+  prompt: 'What is the sentiment around our latest product launch on Reddit?',
+  sources: ['reddit'],
+  dateRange: {
+    start: '2026-04-01T00:00:00Z',
+    end: '2026-04-30T23:59:59Z',
+  },
+  limit: 500,
+};
+
+const result = await client.query(options);
+
+for (const record of result.records) {
+  console.log(record);
+}
+```
+
+---
+
+## Get query status
+
+Submit a query without awaiting completion, then poll for its status separately.
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+// Submit without waiting for completion
+const query = await client.queries.submit({
+  prompt: 'Which influencers are organically talking about our brand on YouTube?',
+  sources: ['youtube'],
+});
+
+console.log(`Query ID: ${query.id}, Status: ${query.status}`);
+
+// Poll later
+const result = await client.queries.get(query.id);
+console.log(result.status);
+```
+
+---
+
+## Create a scheduled job
+
+Schedule a query to run automatically using a cron expression.
+
+```typescript
+import { BitKit, CreateJobOptions } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+const jobOptions: CreateJobOptions = {
+  name: 'Daily Acme mentions',
+  prompt: 'How many times was Acme mentioned on X today?',
+  sources: ['x'],
+  schedule: '0 8 * * *', // Every day at 08:00 UTC
+  webhookUrl: 'https://yourapp.example.com/webhooks/bitkit',
+};
+
+const job = await client.jobs.create(jobOptions);
+
+console.log(`Job created: ${job.id}`);
+console.log(`Next run: ${job.nextRunAt}`);
+```
+
+---
+
+## Manage jobs
+
+List, pause, and delete jobs using the typed `client.jobs` namespace.
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+// List all jobs
+const { jobs } = await client.jobs.list();
+for (const job of jobs) {
+  console.log(`${job.name} — ${job.status}`);
+}
+
+// Pause a job
+await client.jobs.update('job_01hx9jk2p4n5m6r7s8t9u0v1w', { status: 'paused' });
+
+// Delete a job
+await client.jobs.delete('job_01hx9jk2p4n5m6r7s8t9u0v1w');
+```
+
+---
+
+## List and download storage files
+
+Each job run produces a JSON result file stored by BitKit. Use `client.storage` to browse and download them.
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+// List available files
+const { files } = await client.storage.list();
+for (const file of files) {
+  console.log(`${file.key} — ${file.sizeBytes} bytes`);
+}
+
+// Download and parse the most recent file
+const latest = files[0];
+const data = await client.storage.download(latest.key);
+const parsed = JSON.parse(data);
+
+console.log('Summary:', parsed.result.summary);
+console.log('Records:', parsed.result.records.length);
+```
+
+---
+
+## Full example
+
+The following script ties together query submission, result handling, and error logging in a single async function:
+
+```typescript
+import { BitKit } from '@bitkit/sdk';
+
+async function main(): Promise<void> {
+  const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+  const result = await client.query({
+    prompt: 'Show me trending hashtags related to AI on TikTok this month',
+    sources: ['tiktok'],
+    limit: 100,
+  });
+
+  if (result.status === 'completed') {
+    console.log('Summary:', result.summary);
+    console.log('Top records:');
+    result.records.slice(0, 5).forEach((record) => console.log(' -', record));
+  } else {
+    console.error('Query failed:', result.error);
+    process.exit(1);
+  }
+}
+
+main().catch(console.error);
+```

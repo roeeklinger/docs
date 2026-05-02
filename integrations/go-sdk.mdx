@@ -1,0 +1,276 @@
+---
+title: "BitKit Go SDK installation and usage"
+description: "Install the BitKit Go SDK and integrate natural language web queries into your Go services. Covers context-aware requests, polling, jobs, and storage downloads."
+---
+
+The BitKit Go SDK provides a context-aware, fully typed client for the BitKit API. It follows standard Go conventions for error handling, uses `context.Context` for cancellation and timeouts, and ships with no external dependencies beyond the standard library. You can integrate it into any Go service, CLI, or background worker.
+
+## Installation
+
+```bash
+go get github.com/bitkit/bitkit-go
+```
+
+<Note>
+  The SDK reads your API key from the `BITKIT_API_KEY` environment variable by default. Pass it via `os.Getenv("BITKIT_API_KEY")` or set it in your deployment environment so you do not hard-code credentials in source.
+</Note>
+
+## Initialization
+
+```go
+package main
+
+import (
+	"os"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func main() {
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+}
+```
+
+---
+
+## Submit a query
+
+Use `client.Queries.Submit` to send a natural language prompt and receive a query ID. Then poll with `client.Queries.Get` until the status is `completed`.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"time"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func main() {
+	ctx := context.Background()
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+
+	query, err := client.Queries.Submit(ctx, bitkit.QueryParams{
+		Prompt:  "How many times was Acme mentioned on X this week?",
+		Sources: []string{"x", "reddit"},
+		Limit:   250,
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "submit error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Query submitted: %s (status: %s)\n", query.ID, query.Status)
+}
+```
+
+---
+
+## Poll for results
+
+Continuously poll until the query reaches a terminal state.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"time"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func waitForQuery(ctx context.Context, client *bitkit.Client, queryID string) (*bitkit.QueryResult, error) {
+	for {
+		result, err := client.Queries.Get(ctx, queryID)
+		if err != nil {
+			return nil, fmt.Errorf("polling error: %w", err)
+		}
+
+		switch result.Status {
+		case "completed":
+			return result, nil
+		case "failed":
+			return nil, fmt.Errorf("query failed: %s", result.Error)
+		}
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(2 * time.Second):
+		}
+	}
+}
+
+func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+
+	query, err := client.Queries.Submit(ctx, bitkit.QueryParams{
+		Prompt:  "What are the top complaints about our service on X?",
+		Sources: []string{"x"},
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	result, err := waitForQuery(ctx, client, query.ID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Summary:", result.Result.Summary)
+	fmt.Printf("Total results: %d\n", result.Result.TotalResults)
+}
+```
+
+---
+
+## Create a scheduled job
+
+Use `client.Jobs.Create` to schedule a query to run on a cron schedule.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func main() {
+	ctx := context.Background()
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+
+	webhookURL := "https://yourapp.example.com/webhooks/bitkit"
+
+	job, err := client.Jobs.Create(ctx, bitkit.CreateJobParams{
+		Name:       "Daily Acme mentions",
+		Prompt:     "How many times was Acme mentioned on X today?",
+		Sources:    []string{"x"},
+		Schedule:   "0 8 * * *", // Every day at 08:00 UTC
+		WebhookURL: &webhookURL,
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Job created: %s\n", job.ID)
+	fmt.Printf("Next run: %s\n", job.NextRunAt)
+}
+```
+
+---
+
+## Manage jobs
+
+List all jobs, pause one, and delete another.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func main() {
+	ctx := context.Background()
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+
+	// List all jobs
+	jobs, err := client.Jobs.List(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "list error: %v\n", err)
+		os.Exit(1)
+	}
+
+	for _, j := range jobs {
+		fmt.Printf("%s — %s\n", j.Name, j.Status)
+	}
+
+	// Pause a specific job
+	paused := "paused"
+	_, err = client.Jobs.Update(ctx, "job_01hx9jk2p4n5m6r7s8t9u0v1w", bitkit.UpdateJobParams{
+		Status: &paused,
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "update error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Delete a job
+	err = client.Jobs.Delete(ctx, "job_01hx9jk2p4n5m6r7s8t9u0v1w")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "delete error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Job deleted.")
+}
+```
+
+---
+
+## Download a result file
+
+List storage files and download one by its key.
+
+```go
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os"
+
+	bitkit "github.com/bitkit/bitkit-go"
+)
+
+func main() {
+	ctx := context.Background()
+	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+
+	files, err := client.Storage.List(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "list error: %v\n", err)
+		os.Exit(1)
+	}
+
+	if len(files) == 0 {
+		fmt.Println("No result files found.")
+		return
+	}
+
+	data, err := client.Storage.Download(ctx, files[0].Key)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "download error: %v\n", err)
+		os.Exit(1)
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(data, &result); err != nil {
+		fmt.Fprintf(os.Stderr, "parse error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Downloaded %d bytes from %s\n", len(data), files[0].Key)
+}
+```

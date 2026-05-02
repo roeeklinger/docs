@@ -1,0 +1,95 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "BitKit",
+  "colors": {
+    "primary": "#7f8fff",
+    "light": "#7f8fff",
+    "dark": "#7f8fff"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/bitkit"
+    },
+    "links": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/natural-language-queries",
+              "concepts/data-sources",
+              "concepts/data-stitching",
+              "concepts/jobs-and-scheduling"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/brand-monitoring",
+              "guides/sentiment-analysis",
+              "guides/competitor-intelligence",
+              "guides/exporting-data"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/rest-api",
+              "integrations/python-sdk",
+              "integrations/typescript-sdk",
+              "integrations/go-sdk",
+              "integrations/webhooks",
+              "integrations/s3-storage"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "account/plans-and-billing",
+              "account/privacy-and-data",
+              "account/api-keys"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Learn how to use the BitKit platform",
+  "background": {
+    "color": {
+      "light": "#030712",
+      "dark": "#030712"
+    }
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": true
+  },
+  "fonts": {
+    "family": "Inter"
+  },
+  "banner": {
+    "content": "asdasdasdasdasdfasd",
+    "dismissible": false
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/test",
+      "reddit": "https://test.com"
+    }
+  }
+}

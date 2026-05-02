@@ -1,0 +1,455 @@
+---
+title: "BitKit REST API reference and endpoints"
+description: "Complete reference for the BitKit REST API. Covers query submission, job management, storage, and webhook registration with request/response examples."
+---
+
+The BitKit REST API gives you programmatic access to every capability on the platform — submitting natural language queries, scheduling recurring jobs, retrieving stored results, and registering webhooks. All requests are authenticated with a Bearer token and target the base URL `https://api.bitkit.dev/v1`.
+
+## Authentication
+
+Include your API key as a Bearer token on every request.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+<Note>
+  You can find and rotate your API keys in the dashboard under **Settings → API Keys**.
+</Note>
+
+---
+
+## Queries
+
+Use the Queries resource to submit a natural language prompt against one or more sources and retrieve results.
+
+### Submit a query
+
+<ParamField body="prompt" type="string" required>
+  The natural language question or instruction to execute against the selected sources.
+</ParamField>
+
+<ParamField body="sources" type="string[]" required>
+  List of source identifiers to query. Examples: `"x"`, `"reddit"`, `"linkedin"`, `"youtube"`, `"tiktok"`, `"instagram"`, `"facebook"`.
+</ParamField>
+
+<ParamField body="date_range" type="object">
+  Optional time window to restrict results.
+  <Expandable title="properties">
+    <ParamField body="start" type="string">
+      ISO 8601 start date, e.g. `"2026-04-01T00:00:00Z"`.
+    </ParamField>
+    <ParamField body="end" type="string">
+      ISO 8601 end date, e.g. `"2026-04-30T23:59:59Z"`.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="limit" type="number" default="100">
+  Maximum number of results to return. Accepts 1–1000.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api.bitkit.dev/v1/queries \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "prompt": "How many times was Acme mentioned on X this week?",
+    "sources": ["x", "reddit"],
+    "date_range": {
+      "start": "2026-04-24T00:00:00Z",
+      "end": "2026-04-30T23:59:59Z"
+    },
+    "limit": 250
+  }'
+```
+
+</CodeGroup>
+
+**Response**
+
+<ResponseField name="id" type="string" required>
+  Unique identifier for this query. Use it to poll for results.
+</ResponseField>
+
+<ResponseField name="status" type="string" required>
+  Current status: `queued`, `running`, `completed`, or `failed`.
+</ResponseField>
+
+<ResponseField name="created_at" type="string" required>
+  ISO 8601 timestamp of when the query was submitted.
+</ResponseField>
+
+```json
+{
+  "id": "qry_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "status": "queued",
+  "created_at": "2026-04-30T14:02:00Z"
+}
+```
+
+---
+
+### Get query results
+
+Retrieve the status and results of a previously submitted query.
+
+<ParamField path="id" type="string" required>
+  The query ID returned from `POST /v1/queries`.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url https://api.bitkit.dev/v1/queries/qry_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+**Response**
+
+<ResponseField name="id" type="string" required>
+  Query identifier.
+</ResponseField>
+
+<ResponseField name="status" type="string" required>
+  `queued`, `running`, `completed`, or `failed`.
+</ResponseField>
+
+<ResponseField name="result" type="object">
+  Present when `status` is `completed`.
+  <Expandable title="properties">
+    <ResponseField name="summary" type="string">
+      AI-generated natural language summary of the findings.
+    </ResponseField>
+    <ResponseField name="total_results" type="number">
+      Total number of matching data points found.
+    </ResponseField>
+    <ResponseField name="records" type="object[]">
+      Array of individual result records.
+    </ResponseField>
+    <ResponseField name="result_url" type="string">
+      URL to download the full result file from storage.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Error message when `status` is `failed`.
+</ResponseField>
+
+```json
+{
+  "id": "qry_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "status": "completed",
+  "created_at": "2026-04-30T14:02:00Z",
+  "completed_at": "2026-04-30T14:02:38Z",
+  "result": {
+    "summary": "Acme was mentioned 1,284 times across X and Reddit this week, with 62% positive sentiment.",
+    "total_results": 1284,
+    "result_url": "https://api.bitkit.dev/v1/storage/qry_01hx9jk2p4n5m6r7s8t9u0v1w/result.json",
+    "records": []
+  }
+}
+```
+
+---
+
+## Jobs
+
+Jobs let you schedule a query to run automatically on a cron schedule. Each run stores results and can notify your endpoint via webhook.
+
+### List jobs
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url https://api.bitkit.dev/v1/jobs \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+```json
+{
+  "jobs": [
+    {
+      "id": "job_01hx9jk2p4n5m6r7s8t9u0v1w",
+      "name": "Daily Acme mentions",
+      "status": "active",
+      "schedule": "0 8 * * *",
+      "last_run_at": "2026-04-30T08:00:00Z",
+      "next_run_at": "2026-05-01T08:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### Create a job
+
+<ParamField body="name" type="string" required>
+  A human-readable label for the job.
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  The natural language query to execute on each run.
+</ParamField>
+
+<ParamField body="sources" type="string[]" required>
+  List of source identifiers to query.
+</ParamField>
+
+<ParamField body="schedule" type="string" required>
+  Cron expression defining the run frequency, e.g. `"0 8 * * *"` for 08:00 UTC daily.
+</ParamField>
+
+<ParamField body="webhook_url" type="string">
+  Optional URL to receive a POST callback when each run completes.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api.bitkit.dev/v1/jobs \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "name": "Daily Acme mentions",
+    "prompt": "How many times was Acme mentioned on X today?",
+    "sources": ["x"],
+    "schedule": "0 8 * * *",
+    "webhook_url": "https://yourapp.example.com/webhooks/bitkit"
+  }'
+```
+
+</CodeGroup>
+
+```json
+{
+  "id": "job_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "name": "Daily Acme mentions",
+  "status": "active",
+  "schedule": "0 8 * * *",
+  "created_at": "2026-04-30T14:05:00Z",
+  "next_run_at": "2026-05-01T08:00:00Z"
+}
+```
+
+---
+
+### Update a job
+
+Pause or resume a job, change its schedule, or update its webhook URL.
+
+<ParamField path="id" type="string" required>
+  The job ID to update.
+</ParamField>
+
+<ParamField body="status" type="string">
+  Set to `"paused"` or `"active"` to pause or resume the job.
+</ParamField>
+
+<ParamField body="schedule" type="string">
+  New cron expression for the job.
+</ParamField>
+
+<ParamField body="webhook_url" type="string">
+  Updated webhook URL.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request PATCH \
+  --url https://api.bitkit.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "status": "paused"
+  }'
+```
+
+</CodeGroup>
+
+```json
+{
+  "id": "job_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "status": "paused",
+  "updated_at": "2026-04-30T15:00:00Z"
+}
+```
+
+---
+
+### Delete a job
+
+<ParamField path="id" type="string" required>
+  The job ID to delete. This action is irreversible.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request DELETE \
+  --url https://api.bitkit.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+```json
+{
+  "deleted": true,
+  "id": "job_01hx9jk2p4n5m6r7s8t9u0v1w"
+}
+```
+
+---
+
+## Storage
+
+BitKit stores every job run result as a file you can list and download through the API or the dashboard Storage tab.
+
+### List result files
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url https://api.bitkit.dev/v1/storage \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+```json
+{
+  "files": [
+    {
+      "key": "job_01hx9jk2p4n5m6r7s8t9u0v1w/2026-04-30T08:00:00Z.json",
+      "size_bytes": 48320,
+      "created_at": "2026-04-30T08:01:22Z"
+    }
+  ]
+}
+```
+
+---
+
+### Download a result file
+
+<ParamField path="key" type="string" required>
+  The file key returned from `GET /v1/storage`. URL-encode slashes or pass as a path segment.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url 'https://api.bitkit.dev/v1/storage/job_01hx9jk2p4n5m6r7s8t9u0v1w%2F2026-04-30T08%3A00%3A00Z.json' \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --output result.json
+```
+
+</CodeGroup>
+
+The response body is the raw JSON result file.
+
+---
+
+## Webhooks
+
+Register an endpoint to receive POST callbacks when job runs complete.
+
+### Register a webhook
+
+<ParamField body="url" type="string" required>
+  The HTTPS endpoint BitKit should POST results to.
+</ParamField>
+
+<ParamField body="events" type="string[]">
+  List of event types to subscribe to. Defaults to `["job.completed"]`.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api.bitkit.dev/v1/webhooks \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "url": "https://yourapp.example.com/webhooks/bitkit",
+    "events": ["job.completed"]
+  }'
+```
+
+</CodeGroup>
+
+```json
+{
+  "id": "wh_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "url": "https://yourapp.example.com/webhooks/bitkit",
+  "events": ["job.completed"],
+  "created_at": "2026-04-30T14:10:00Z"
+}
+```
+
+---
+
+### Delete a webhook
+
+<ParamField path="id" type="string" required>
+  The webhook ID to delete.
+</ParamField>
+
+<CodeGroup>
+
+```bash cURL
+curl --request DELETE \
+  --url https://api.bitkit.dev/v1/webhooks/wh_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+```json
+{
+  "deleted": true,
+  "id": "wh_01hx9jk2p4n5m6r7s8t9u0v1w"
+}
+```
+
+---
+
+## Error codes
+
+BitKit uses standard HTTP status codes. All error responses include a JSON body with a `code` and `message` field.
+
+```json
+{
+  "error": {
+    "code": "rate_limited",
+    "message": "You have exceeded your request quota. Retry after 60 seconds."
+  }
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `400 Bad Request` | The request body is missing required fields or contains invalid values. |
+| `401 Unauthorized` | The `Authorization` header is missing or the API key is invalid. |
+| `402 Payment Required` | Your account has a billing issue. Check **Settings → Billing** in the dashboard. |
+| `403 Forbidden` | Your API key does not have permission to perform this action. |
+| `404 Not Found` | The requested resource does not exist. |
+| `429 Too Many Requests` | You have exceeded your rate limit. Respect the `Retry-After` header. |
+| `500 Internal Server Error` | An unexpected error occurred on BitKit's servers. Contact support if it persists. |

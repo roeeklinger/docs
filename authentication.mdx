@@ -1,0 +1,144 @@
+---
+title: "Authenticate with BitKit using API keys"
+description: "BitKit authenticates every request with API keys. Learn how to generate keys, set the correct scope, pass them as Bearer tokens, and handle auth errors."
+---
+
+BitKit authenticates every API request using API keys. You include your key in the `Authorization` header of each request, and BitKit validates it before executing the query. This page explains how to create keys, which scopes are available, how to include keys in requests across different languages, and how to respond to authentication errors.
+
+## Creating an API key
+
+To generate a new API key:
+
+1. Open **Settings** → **API Keys** in the BitKit dashboard.
+2. Click **New Key**.
+3. Enter a descriptive name for the key (for example, `production`, `development`, or `ci-pipeline`).
+4. Select the scopes the key should have (see [Key scopes](#key-scopes) below).
+5. Click **Create** and copy the key.
+
+<Warning>
+  The full key value is only shown once, immediately after creation. Copy it to a secure location before closing the dialog. If you lose the key, you must rotate it.
+</Warning>
+
+<Note>
+  Never commit API keys to source control. Use environment variables, a secrets manager, or a CI/CD secrets store to inject keys at runtime.
+</Note>
+
+## Including keys in requests
+
+Pass your API key as a Bearer token in the `Authorization` header of every request.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.bitkit.dev/v1/queries \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Mentions of Acme on X this week", "sources": ["x"]}'
+```
+
+```python python
+import os
+import requests
+
+response = requests.post(
+    "https://api.bitkit.dev/v1/queries",
+    headers={
+        "Authorization": f"Bearer {os.environ['BITKIT_API_KEY']}",
+        "Content-Type": "application/json",
+    },
+    json={
+        "prompt": "Mentions of Acme on X this week",
+        "sources": ["x"],
+    },
+)
+data = response.json()
+```
+
+```typescript typescript
+import fetch from "node-fetch";
+
+const response = await fetch("https://api.bitkit.dev/v1/queries", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.BITKIT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    prompt: "Mentions of Acme on X this week",
+    sources: ["x"],
+  }),
+});
+
+const data = await response.json();
+```
+
+```go go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+)
+
+func main() {
+	body, _ := json.Marshal(map[string]interface{}{
+		"prompt":  "Mentions of Acme on X this week",
+		"sources": []string{"x"},
+	})
+
+	req, _ := http.NewRequest("POST", "https://api.bitkit.dev/v1/queries", bytes.NewBuffer(body))
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("BITKIT_API_KEY"))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Request failed:", err)
+		return
+	}
+	defer resp.Body.Close()
+}
+```
+
+</CodeGroup>
+
+## Key scopes
+
+Each API key is issued with one or more scopes that control what it can do. Assign only the scopes a key actually needs.
+
+| Scope | What it allows |
+| --- | --- |
+| `read` | Fetch query results, retrieve job status, and list sources |
+| `write` | Submit new queries, create and manage scheduled jobs |
+| `admin` | Manage API keys, update billing settings, and configure integrations |
+
+<Tip>
+  Use separate keys for separate environments — for example, one `write` key for your production pipeline and one `read` key for your analytics dashboard. This limits the blast radius if a key is compromised.
+</Tip>
+
+## Rotating keys
+
+If a key is compromised or you want to cycle credentials as part of a security policy, rotate it from **Settings** → **API Keys**:
+
+1. Generate a new key with the same scopes as the key you are replacing.
+2. Update your application or secrets manager with the new key.
+3. Verify that requests succeed with the new key.
+4. Revoke the old key by clicking **Revoke** next to it in the key list.
+
+Revoking a key takes effect immediately. Any in-flight requests using the revoked key will receive a `401 Unauthorized` response.
+
+## Authentication errors
+
+| HTTP status | Meaning | Common cause |
+| --- | --- | --- |
+| `401 Unauthorized` | The key is missing, malformed, or has been revoked | Missing `Authorization` header, typo in the key, or key revoked |
+| `403 Forbidden` | The key is valid but lacks the required scope | Using a `read`-scoped key to submit a new query |
+
+When you receive a `401`, check that the `Authorization` header is formatted as `Bearer YOUR_API_KEY` (note the space after `Bearer`) and that the key has not been revoked. When you receive a `403`, review the scopes assigned to the key and generate a new key with the correct scope if needed.
+
+<Note>
+  A `402 Payment Required` response means your account has an unpaid balance. BitKit provides a 7-day grace period for failed charges. Resolve billing in **Settings** → **Plans & Billing** to restore full API access.
+</Note>

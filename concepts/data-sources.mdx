@@ -1,0 +1,98 @@
+---
+title: "Supported data sources and platform coverage"
+description: "BitKit connects to 13,000+ web sources. Learn which platforms are supported, how coverage works, and how to target specific sources in your queries."
+---
+
+BitKit connects to over 13,000 web sources across social media, professional networks, video platforms, search engines, and developer communities. When you run a query, you can target a specific set of platforms or cast a wide net across all available sources. This page covers which platforms are supported, what data is available from each, and how to specify sources in your queries.
+
+## Major supported platforms
+
+<CardGroup cols={3}>
+  <Card title="X (Twitter)" icon="x-twitter">
+    Posts, replies, reposts, quote tweets, and user profiles. Ideal for tracking brand mentions, trending topics, and real-time public sentiment.
+  </Card>
+  <Card title="Reddit" icon="reddit">
+    Posts, comments, upvotes, and subreddit metadata. Useful for community discussions, product feedback, and niche audience research.
+  </Card>
+  <Card title="LinkedIn" icon="linkedin">
+    Posts, job listings, company pages, and professional profiles. Best for B2B research, industry trends, and hiring signals.
+  </Card>
+  <Card title="Instagram" icon="instagram">
+    Captions, hashtags, engagement metrics, and public profile data. Suited for influencer research and brand visibility on visual content.
+  </Card>
+  <Card title="YouTube" icon="youtube">
+    Video titles, descriptions, comments, and channel metadata. Use for tracking product reviews, tutorials, and influencer coverage.
+  </Card>
+  <Card title="TikTok" icon="tiktok">
+    Video captions, hashtags, comments, and creator profiles. Useful for trend discovery and short-form content analysis.
+  </Card>
+  <Card title="Facebook" icon="facebook">
+    Public posts, group discussions, page content, and profile data. Helpful for community research and demographic insights.
+  </Card>
+  <Card title="Google" icon="google">
+    Search results, news articles, and web mentions. Covers editorial coverage, press mentions, and public knowledge graph data.
+  </Card>
+  <Card title="GitHub" icon="github">
+    Repositories, issues, pull requests, README content, and developer profiles. Best for open-source monitoring and developer ecosystem research.
+  </Card>
+</CardGroup>
+
+## Specifying sources in a query
+
+By default, BitKit searches across all available sources. To target specific platforms, pass a `sources` array in your query with one or more source identifiers:
+
+```json
+{
+  "prompt": "What are developers saying about our SDK on Reddit and GitHub?",
+  "sources": ["reddit", "github"],
+  "limit": 100
+}
+```
+
+To explicitly search all sources, use the `"all"` shorthand:
+
+```json
+{
+  "prompt": "How many times has Acme been mentioned this month?",
+  "sources": ["all"],
+  "date_range": {
+    "from": "2026-04-01",
+    "to": "2026-04-30"
+  }
+}
+```
+
+<Note>
+  Using `"sources": ["all"]` is equivalent to omitting the `sources` parameter entirely. It is useful when you want to be explicit in saved queries or job configurations that you intend to search broadly.
+</Note>
+
+## Source identifiers
+
+Use these identifiers in the `sources` array:
+
+| Platform | Identifier |
+|---|---|
+| X (Twitter) | `"x"` |
+| Reddit | `"reddit"` |
+| LinkedIn | `"linkedin"` |
+| Instagram | `"instagram"` |
+| YouTube | `"youtube"` |
+| TikTok | `"tiktok"` |
+| Facebook | `"facebook"` |
+| Google | `"google"` |
+| GitHub | `"github"` |
+| All sources | `"all"` |
+
+## Coverage at a glance
+
+BitKit's coverage spans the breadth of the public web, not just the major platforms listed above:
+
+- **13,000+** total sources available
+- **94,000+** API endpoints across those sources
+- **230 million+** data points collected and indexed
+
+The full source catalog includes news sites, forums, review platforms, job boards, and more. When you use `"sources": ["all"]`, BitKit routes your query across the complete catalog and returns the most relevant results.
+
+<Tip>
+  For brand monitoring or competitive research, start with `"sources": ["all"]` to get broad coverage, then narrow to specific platforms once you identify where the most signal is coming from.
+</Tip>

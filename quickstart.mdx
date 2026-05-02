@@ -1,0 +1,88 @@
+---
+title: "Get started with BitKit"
+description: "Learn how to create an account, generate an API key, and run your first BitKit query in under five minutes."
+---
+
+This guide walks you through creating a BitKit account, generating your first API key, and submitting a natural language query via the REST API. By the end you'll have a working request and a real response to explore.
+
+<Steps>
+
+  <Step title="Create your account">
+    Go to [app.bitkit.dev/signup](https://app.bitkit.dev/signup) and create a free account. You can sign up with Google, GitHub, or SSO, or register with an email address and password.
+
+    Once your account is created, you land in your project workspace. The free tier includes 1,000 queries per month at no cost — no credit card required to get started.
+
+    <Note>
+      If your organization uses SSO, contact your administrator for the SSO link before signing up with email.
+    </Note>
+  </Step>
+
+  <Step title="Generate an API key">
+    From the dashboard, open **Settings** → **API Keys** and click **New Key**. Give the key a descriptive name (for example, `development` or `ci-pipeline`) and select the scopes you need.
+
+    Copy the key immediately — it is only shown once. Store it in a secure location such as a secrets manager or environment variable.
+
+    <Warning>
+      Never commit API keys to source control. Use environment variables or a secrets manager to inject keys at runtime.
+    </Warning>
+  </Step>
+
+  <Step title="Run your first query">
+    Send a `POST` request to `/v1/queries` with your natural language prompt and the sources you want to query. Pass your API key in the `Authorization` header.
+
+    ```bash
+    curl -X POST https://api.bitkit.dev/v1/queries \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "How many times was our brand Acme mentioned on X in the last 7 days?",
+        "sources": ["x", "reddit"]
+      }'
+    ```
+
+    Replace `YOUR_API_KEY` with the key you generated in the previous step.
+  </Step>
+
+  <Step title="View the results">
+    A successful request returns a JSON object with a query `id`, a `status`, and a `results` array. When the query completes synchronously the status is `completed` and results are included in the response. Long-running queries return `pending` — poll the query by `id` or use webhooks to receive a notification when results are ready.
+
+    ```json
+    {
+      "id": "qry_01hx9m4kzp8v3tnb6wcqd7rf2e",
+      "status": "completed",
+      "prompt": "How many times was our brand Acme mentioned on X in the last 7 days?",
+      "results": [
+        {
+          "source": "x",
+          "count": 1482
+        },
+        {
+          "source": "reddit",
+          "count": 317
+        }
+      ],
+      "created_at": "2026-04-30T14:02:00Z"
+    }
+    ```
+
+    You can also view query results in the **Dashboard** → **Jobs** panel of your project workspace, where BitKit displays charts and sentiment breakdowns alongside the raw counts.
+  </Step>
+
+</Steps>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn about key scopes, key rotation, and how to handle auth errors.
+  </Card>
+  <Card title="Core concepts" icon="book-open" href="/concepts/natural-language-queries">
+    Understand how BitKit translates prompts into targeted data fetches.
+  </Card>
+  <Card title="REST API" icon="code" href="/integrations/rest-api">
+    Explore all available endpoints, parameters, and response schemas.
+  </Card>
+  <Card title="Brand monitoring" icon="bell" href="/guides/brand-monitoring">
+    Set up a recurring job to track brand mentions across multiple sources.
+  </Card>
+</CardGroup>

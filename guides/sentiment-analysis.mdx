@@ -1,0 +1,83 @@
+---
+title: "Analyze sentiment around your brand or product"
+description: "BitKit uses an AI model to classify every mention as positive, negative, or neutral. Learn how to request sentiment analysis and read the scored results."
+---
+
+BitKit's sentiment analysis uses an AI model to read every mention it collects and classify it as positive, negative, or neutral. When you include a sentiment instruction in your query prompt, the API returns raw mention counts alongside a per-category breakdown and an overall sentiment score — giving you a single, comparable metric you can track over time.
+
+## Request and interpret sentiment analysis
+
+<Steps>
+  <Step title="Include sentiment in your query prompt">
+    Add explicit classification instructions to your natural language prompt. BitKit uses this to apply the sentiment model before returning results.
+
+    ```bash
+    curl -X POST https://api.bitkit.dev/v1/queries \
+      -H "Authorization: Bearer $BITKIT_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "What'\''s the overall sentiment around our product launch on Reddit and X this week? Classify mentions as positive, negative, or neutral.",
+        "sources": ["reddit", "x"]
+      }'
+    ```
+  </Step>
+
+  <Step title="Understand the sentiment breakdown response">
+    BitKit returns a `sentiment` object alongside the standard mention counts. Each category includes a count and a representative sample of mentions.
+
+    ```json
+    {
+      "query_id": "qry_02k8au4ql3examp2f",
+      "status": "completed",
+      "result": {
+        "total_mentions": 2104,
+        "unique_users": 1387,
+        "sentiment": {
+          "sentiment_score": 0.61,
+          "positive_count": 1283,
+          "negative_count": 412,
+          "neutral_count": 409,
+          "examples": {
+            "positive": [
+              "The new release is genuinely impressive — performance is night and day.",
+              "Finally launched and it did not disappoint. Great work by the team."
+            ],
+            "negative": [
+              "Onboarding is still confusing. Took me 20 minutes to find the export option.",
+              "Pricing jumped without warning. Not happy about this."
+            ],
+            "neutral": [
+              "BitKit just dropped v1.4. Anyone tried it yet?",
+              "Saw the announcement. Will check it out this weekend."
+            ]
+          }
+        }
+      }
+    }
+    ```
+
+    The `sentiment_score` ranges from `0.0` (entirely negative) to `1.0` (entirely positive). A score above `0.5` means positive mentions outnumber negative ones. Use `positive_count`, `negative_count`, and `neutral_count` for absolute comparisons across campaigns or time periods.
+  </Step>
+
+  <Step title="Visualize in the dashboard">
+    After the query completes, open **Dashboard → Jobs** and select the result. BitKit renders a **Sentiment Breakdown** chart showing the share of positive, negative, and neutral mentions. Hover over any segment to see the count and the top example mentions for that category.
+
+    You can pin the chart to your workspace overview for at-a-glance monitoring during a launch or campaign.
+  </Step>
+
+  <Step title="Export for deeper analysis">
+    To run your own analysis or load results into a BI tool, download the structured JSON from **Storage** or use the REST API.
+
+    ```bash
+    curl -X GET "https://api.bitkit.dev/v1/storage/qry_02k8au4ql3examp2f" \
+      -H "Authorization: Bearer $BITKIT_API_KEY" \
+      --output sentiment-results.json
+    ```
+
+    The exported file contains the full `sentiment` object, all mention metadata, and timestamps so you can join results across multiple query runs.
+  </Step>
+</Steps>
+
+<Tip>
+  Combine sentiment with competitor queries to benchmark your brand's perception against rivals. For example: "Compare the sentiment around YourBrand and CompetitorBrand on Reddit this month. Classify mentions as positive, negative, or neutral." The response includes a side-by-side `sentiment_score` for each brand, making it easy to spot where a competitor has an edge.
+</Tip>

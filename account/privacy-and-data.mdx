@@ -1,0 +1,90 @@
+---
+title: "How BitKit handles your data and privacy"
+description: "BitKit's privacy commitments: no data sales, opt-in model training, 24-hour delete, one-click export, and 30-day subprocessor notice."
+---
+
+BitKit is built on the principle that your queries and the insights they produce belong to you. This page describes BitKit's five core privacy commitments, where to find your privacy controls in the dashboard, how long different types of data are retained, which subprocessors handle your data, and how to request deletion.
+
+## Core privacy commitments
+
+<AccordionGroup>
+  <Accordion title="No sale of personal data" icon="ban" defaultOpen={false}>
+    BitKit does not sell, rent, or trade your personal data to any third party — ever. This commitment is permanent and encoded in BitKit's Data Processing Agreement (DPA). There is no pricing tier, partnership, or business model change that would alter this policy.
+  </Accordion>
+  <Accordion title="No model training on your queries" icon="brain" defaultOpen={false}>
+    BitKit does not use your queries to train or fine-tune AI models by default. This setting is **off for every account**. You can opt in to contributing anonymized query samples through the dashboard, but BitKit will never enable this without your explicit action.
+  </Accordion>
+  <Accordion title="24-hour delete on request" icon="trash" defaultOpen={false}>
+    When you request account deletion, BitKit performs a hard delete across all primaries, replicas, and backups within 24 hours of confirmation. No residual copies are retained in any tier of the storage stack after that window.
+  </Accordion>
+  <Accordion title="Full export in one click" icon="download" defaultOpen={false}>
+    You can download a complete, signed JSON archive of every query you have run, every account record, and every audit event at any time — with no support ticket and no waiting period. The export is generated immediately from **Settings → Privacy → Export**.
+  </Accordion>
+  <Accordion title="30-day notice on subprocessor changes" icon="bell" defaultOpen={false}>
+    BitKit announces any addition, replacement, or removal of subprocessors — including new vendors, new regions, and ownership changes — at least 30 days before the change takes effect. You will never find out about a subprocessor change after the fact.
+  </Accordion>
+</AccordionGroup>
+
+## Privacy controls
+
+Access all privacy settings from **Account → Settings → Privacy**. The following controls are available:
+
+<CardGroup cols={2}>
+  <Card title="Telemetry" icon="chart-bar">
+    Toggle product usage telemetry on or off. Telemetry data is always de-identified.
+  </Card>
+  <Card title="Retention" icon="clock">
+    Control how long BitKit retains structured outputs from your queries before automatic deletion.
+  </Card>
+  <Card title="Email preferences" icon="envelope">
+    Manage transactional and product email notifications independently.
+  </Card>
+  <Card title="Model training opt-in" icon="toggle-left">
+    Opt in or out of contributing anonymized query samples to model improvement. Off by default.
+  </Card>
+  <Card title="One-click export" icon="download">
+    Download a signed JSON archive of all your data immediately.
+  </Card>
+  <Card title="Audit log" icon="list">
+    View a full log of every action taken in your account, including API access and settings changes.
+  </Card>
+</CardGroup>
+
+## Data retention
+
+| Data type | Retention period |
+|---|---|
+| Raw scrape logs | 90 days, then automatically purged |
+| Structured query outputs | Until you delete them or close your account |
+| De-identified usage analytics | Indefinitely |
+| Account records and audit events | Until you delete them or close your account |
+
+## Subprocessors
+
+BitKit shares data only with the subprocessors listed below, under contractual confidentiality obligations. Any changes to this list are announced at least 30 days before they take effect.
+
+| Subprocessor | Purpose | Region |
+|---|---|---|
+| AWS | Cloud hosting and storage | us-east-1, us-west-2 |
+| Cloudflare | Edge network and WAF | Global |
+| Stripe | Payment processing | US |
+| Postmark | Transactional email | US |
+| Sentry | Error monitoring | US |
+| Auth0 | Authentication | US |
+
+## How to request deletion
+
+You can delete your account and all associated data in two ways:
+
+<Steps>
+  <Step title="Delete from the dashboard">
+    Go to **Settings → Privacy → Delete Account**. Confirm the deletion when prompted. The 24-hour hard delete begins immediately after confirmation.
+  </Step>
+  <Step title="Request deletion by email">
+    Send a deletion request to [legal@bitkit.dev](mailto:legal@bitkit.dev) from the email address associated with your account. BitKit will confirm receipt and begin the deletion within one business day.
+  </Step>
+</Steps>
+
+<Note>
+  After your deletion request is confirmed, you have 24 hours before the hard delete fans out across all storage tiers. If you submitted a deletion request in error, contact [legal@bitkit.dev](mailto:legal@bitkit.dev) immediately to cancel it.
+</Note>

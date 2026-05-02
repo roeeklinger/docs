@@ -1,0 +1,149 @@
+---
+title: "Research competitors with BitKit web queries"
+description: "Track competitor mentions, sentiment, and feature requests across the web. Compare brand awareness and community feedback at scale."
+---
+
+BitKit turns the open web into a live competitive intelligence feed. By querying multiple platforms in a single prompt, you can track competitor mention volume, gauge public sentiment, surface feature requests your rivals' users are making, and identify the influencers amplifying their brand — all without writing a line of scraping code.
+
+## Track competitor mentions
+
+Find out which competitors are getting the most positive attention on the platforms where your audience lives.
+
+**Example prompt**
+
+> "Which competitor gets the most positive mentions on LinkedIn and X this month?"
+
+**Expected response excerpt**
+
+```json
+{
+  "query_id": "qry_03m1bv5rm4examp3g",
+  "status": "completed",
+  "result": {
+    "ranked_competitors": [
+      {
+        "name": "CompetitorA",
+        "positive_mentions": 1840,
+        "total_mentions": 2310,
+        "sentiment_score": 0.80
+      },
+      {
+        "name": "CompetitorB",
+        "positive_mentions": 1102,
+        "total_mentions": 1780,
+        "sentiment_score": 0.62
+      },
+      {
+        "name": "CompetitorC",
+        "positive_mentions": 540,
+        "total_mentions": 990,
+        "sentiment_score": 0.55
+      }
+    ],
+    "sources": ["linkedin", "x"],
+    "period": "2026-04-01 to 2026-04-30"
+  }
+}
+```
+
+## Compare brand awareness
+
+Measure how your brand's visibility stacks up against a competitor across every supported platform.
+
+**Example prompt**
+
+> "How does our brand awareness compare to CompetitorBrand across all platforms?"
+
+**Expected response excerpt**
+
+```json
+{
+  "result": {
+    "your_brand": {
+      "total_mentions": 8420,
+      "platforms_present": ["x", "reddit", "linkedin", "youtube", "tiktok"]
+    },
+    "competitor": {
+      "name": "CompetitorBrand",
+      "total_mentions": 12350,
+      "platforms_present": ["x", "reddit", "linkedin", "instagram", "youtube", "tiktok", "facebook"]
+    },
+    "awareness_gap": -3930
+  }
+}
+```
+
+A negative `awareness_gap` means the competitor has more total mentions. Use this metric to track whether a marketing campaign is closing the gap over time by scheduling the query to run weekly.
+
+## Find feature requests
+
+Discover what improvements your competitors' users are asking for publicly, and use those signals to inform your own roadmap.
+
+**Example prompt**
+
+> "Summarize the top feature requests about CompetitorProduct from Reddit and X."
+
+**Expected response excerpt**
+
+```json
+{
+  "result": {
+    "top_feature_requests": [
+      {
+        "theme": "Bulk export",
+        "mention_count": 312,
+        "example": "Would love a way to export everything as CSV in one click."
+      },
+      {
+        "theme": "API rate limit increase",
+        "mention_count": 204,
+        "example": "The 100 req/min cap is too low for production use."
+      },
+      {
+        "theme": "Slack integration",
+        "mention_count": 178,
+        "example": "Native Slack notifications would save so much time."
+      }
+    ]
+  }
+}
+```
+
+## Monitor influencer mentions
+
+Identify creators who are already recommending a competitor organically — before they become paid partners.
+
+**Example prompt**
+
+> "Which influencers are organically talking about CompetitorBrand on YouTube and TikTok?"
+
+**Expected response excerpt**
+
+```json
+{
+  "result": {
+    "influencers": [
+      {
+        "handle": "@techreviewer",
+        "platform": "youtube",
+        "mention_count": 8,
+        "estimated_reach": 420000,
+        "latest_mention": "Honest review: I've been using CompetitorBrand for 3 months..."
+      },
+      {
+        "handle": "@startuptips",
+        "platform": "tiktok",
+        "mention_count": 14,
+        "estimated_reach": 185000,
+        "latest_mention": "This tool changed how I do market research..."
+      }
+    ]
+  }
+}
+```
+
+Use this list to reach out to influencers who already understand your space, or to track whether a competitor has begun a paid campaign by monitoring the same handles over time.
+
+<Note>
+  All results reflect publicly available data at the time of the query. BitKit does not access private posts, direct messages, or gated content. Data freshness depends on how recently a source was indexed — most major platforms are updated continuously, but a small delay between a post being published and it appearing in results is normal.
+</Note>

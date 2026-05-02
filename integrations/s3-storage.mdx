@@ -1,0 +1,178 @@
+---
+title: "Store BitKit results in S3-compatible storage"
+description: "Configure BitKit to write query results to any S3-compatible bucket including AWS S3, Cloudflare R2, and MinIO."
+---
+
+BitKit can automatically write each job run's results to your own S3-compatible bucket, giving you full control over data retention, access, and downstream processing. Once configured, results are pushed to your bucket after every run in addition to being available through BitKit's built-in storage API.
+
+<Note>
+  BitKit's built-in storage retains result files until you explicitly delete them. Raw scrape logs are automatically purged after **90 days**. If you need longer retention or want to pipe results into your own data pipeline, connect your own bucket using the steps below.
+</Note>
+
+---
+
+## Configuring your bucket
+
+<Steps>
+  <Step title="Open storage settings">
+    In the BitKit dashboard, go to **Settings → Storage → Connect Bucket**.
+  </Step>
+  <Step title="Enter your bucket details">
+    Provide the following details for your bucket:
+
+    | Field | Description |
+    |-------|-------------|
+    | **Endpoint** | The S3-compatible endpoint URL (e.g. `https://s3.us-east-1.amazonaws.com` for AWS, `https://<account>.r2.cloudflarestorage.com` for Cloudflare R2). |
+    | **Bucket name** | The name of the bucket to write results into. |
+    | **Access key** | Your storage access key ID. |
+    | **Secret key** | Your storage secret access key. |
+  </Step>
+  <Step title="Save and verify">
+    Click **Save**. BitKit performs a test write to confirm credentials and permissions. You will see a confirmation message when the connection is active.
+  </Step>
+</Steps>
+
+---
+
+## Supported providers
+
+BitKit is compatible with any S3-compatible object store. Tested providers include:
+
+<CardGroup cols={2}>
+  <Card title="AWS S3" icon="aws">
+    The original S3 API. Use your region-specific endpoint, e.g. `https://s3.us-east-1.amazonaws.com`.
+  </Card>
+  <Card title="Cloudflare R2" icon="cloud">
+    Zero egress fees. Endpoint format: `https://<account_id>.r2.cloudflarestorage.com`.
+  </Card>
+  <Card title="MinIO" icon="server">
+    Self-hosted S3-compatible storage. Use your MinIO server's URL as the endpoint.
+  </Card>
+  <Card title="Backblaze B2" icon="database">
+    Cost-effective object storage. Use the S3-compatible endpoint from your B2 bucket settings.
+  </Card>
+</CardGroup>
+
+---
+
+## File format and naming
+
+BitKit writes one JSON file per job run. Files are named using the following pattern:
+
+```
+{job_id}/{run_timestamp}.json
+```
+
+For example:
+
+```
+job_01hx9jk2p4n5m6r7s8t9u0v1w/2026-04-30T08:00:00Z.json
+```
+
+Each file contains the full result payload:
+
+```json
+{
+  "job_id": "job_01hx9jk2p4n5m6r7s8t9u0v1w",
+  "run_id": "run_01hx9jk2p4n5m6r7s8t9u0v1x",
+  "prompt": "How many times was Acme mentioned on X today?",
+  "sources": ["x"],
+  "completed_at": "2026-04-30T08:01:22Z",
+  "result": {
+    "summary": "Acme was mentioned 342 times on X today, with 71% positive sentiment.",
+    "total_results": 342,
+    "records": []
+  }
+}
+```
+
+---
+
+## Accessing files from the dashboard
+
+All result files — both from BitKit's built-in storage and from your connected bucket — are visible in the **Storage** tab of your project workspace. Click any file to preview its content or download it directly.
+
+---
+
+## Downloading via the API
+
+You can list and download result files programmatically using the BitKit storage endpoints, regardless of whether you have connected your own bucket.
+
+<CodeGroup>
+
+```python download_results.py
+import json
+from bitkit import BitKit
+
+client = BitKit()
+
+# List all result files
+files = client.storage.list()
+for f in files:
+    print(f"{f.key} — {f.size_bytes} bytes — {f.created_at}")
+
+# Download and parse the most recent result
+latest = files[0]
+data = client.storage.download(latest.key)
+result = json.loads(data)
+
+print("Summary:", result["result"]["summary"])
+print("Total results:", result["result"]["total_results"])
+
+# Process each record
+for record in result["result"]["records"]:
+    print(record)
+```
+
+```typescript download-results.ts
+import { BitKit } from '@bitkit/sdk';
+
+const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+
+// List all result files
+const { files } = await client.storage.list();
+for (const file of files) {
+  console.log(`${file.key} — ${file.sizeBytes} bytes — ${file.createdAt}`);
+}
+
+// Download and parse the most recent result
+const latest = files[0];
+const data = await client.storage.download(latest.key);
+const result = JSON.parse(data);
+
+console.log('Summary:', result.result.summary);
+console.log('Total results:', result.result.totalResults);
+
+// Process each record
+for (const record of result.result.records) {
+  console.log(record);
+}
+```
+
+</CodeGroup>
+
+---
+
+## Accessing files directly from your bucket
+
+When you connect your own S3-compatible bucket, BitKit writes files there directly. You can access them with any S3 client using your own credentials, independent of the BitKit API.
+
+```python
+import boto3
+import json
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url="https://s3.us-east-1.amazonaws.com",
+    aws_access_key_id="YOUR_ACCESS_KEY",
+    aws_secret_access_key="YOUR_SECRET_KEY",
+)
+
+response = s3.get_object(
+    Bucket="your-bucket-name",
+    Key="job_01hx9jk2p4n5m6r7s8t9u0v1w/2026-04-30T08:00:00Z.json",
+)
+
+result = json.loads(response["Body"].read())
+print(result["result"]["summary"])
+```

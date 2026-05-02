@@ -1,0 +1,148 @@
+---
+title: "What are natural language queries in BitKit?"
+description: "BitKit queries let you ask questions in plain English. Learn how to write effective prompts, what parameters are available, and how results are structured."
+---
+
+BitKit lets you query the open web the same way you'd ask a question to a colleague — in plain English. You write a prompt describing what you want to find, and BitKit executes it across thousands of web sources, returning structured records you can explore, export, or pipe into downstream workflows. No query language, no manual scraping, no API wrangling required.
+
+## How queries work
+
+When you submit a query, BitKit interprets your prompt, identifies the most relevant sources, fetches matching content, and returns structured results. You can optionally narrow the query to specific platforms, set a date range, or cap the number of records returned.
+
+<Steps>
+  <Step title="Write your prompt">
+    Describe what you want to find in plain English. Be as specific as possible — mention platforms, time ranges, and the subject you care about.
+  </Step>
+  <Step title="BitKit executes the query">
+    BitKit routes your prompt to the relevant sources, scrapes matching content, and runs any requested analysis (such as sentiment classification).
+  </Step>
+  <Step title="Review structured results">
+    Results appear in your project workspace as structured records with source, author, content, sentiment, and timestamp fields.
+  </Step>
+</Steps>
+
+## Query parameters
+
+Every query accepts the following parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `prompt` | string | Your natural language query (required) |
+| `sources` | array | Platforms to query. Use `["all"]` to search all sources |
+| `date_range` | object | Restrict results to a time window (`from` and `to` as ISO 8601 dates) |
+| `limit` | integer | Maximum number of records to return (default: 100) |
+
+## Example queries
+
+The following examples show how to structure a query via the API:
+
+<CodeGroup>
+
+```json brand mentions
+{
+  "prompt": "How many people mentioned Acme on X in the last week?",
+  "sources": ["x"],
+  "date_range": {
+    "from": "2026-04-23",
+    "to": "2026-04-30"
+  },
+  "limit": 500
+}
+```
+
+```json competitor sentiment
+{
+  "prompt": "What is the overall sentiment around our competitor's latest product launch on Reddit?",
+  "sources": ["reddit"],
+  "date_range": {
+    "from": "2026-04-01",
+    "to": "2026-04-30"
+  },
+  "limit": 200
+}
+```
+
+```json cross-platform research
+{
+  "prompt": "Which influencers are organically talking about sustainable fashion on YouTube and TikTok?",
+  "sources": ["youtube", "tiktok"],
+  "limit": 50
+}
+```
+
+</CodeGroup>
+
+## Result structure
+
+Each query returns an array of records. Here is an example response:
+
+```json
+{
+  "query_id": "qry_7f3a2c01",
+  "total": 3,
+  "records": [
+    {
+      "id": "3a8f2c01",
+      "source": "x",
+      "author": "jakemorrrison",
+      "content": "Acme's new product is honestly the best thing I've used this year.",
+      "sentiment": "positive",
+      "timestamp": "2026-04-28T09:14:22Z",
+      "url": "https://x.com/jakemorrrison/status/..."
+    },
+    {
+      "id": "7b2e9d44",
+      "source": "reddit",
+      "author": "priya_p",
+      "content": "Not impressed with Acme support — took 3 days to get a response.",
+      "sentiment": "negative",
+      "timestamp": "2026-04-27T16:45:10Z",
+      "url": "https://reddit.com/r/startups/comments/..."
+    },
+    {
+      "id": "e1c04af7",
+      "source": "linkedin",
+      "author": "Marcus Chen",
+      "content": "Partnering with Acme has been a solid move for our pipeline.",
+      "sentiment": "positive",
+      "timestamp": "2026-04-26T11:30:00Z",
+      "url": "https://linkedin.com/posts/..."
+    }
+  ]
+}
+```
+
+Each record includes the following fields:
+
+- **`id`** — unique record identifier
+- **`source`** — the platform the record was fetched from
+- **`author`** — username or display name of the content creator
+- **`content`** — the raw text of the post or mention
+- **`sentiment`** — `positive`, `negative`, or `neutral`
+- **`timestamp`** — ISO 8601 datetime of when the content was published
+- **`url`** — direct link to the original content
+
+<Tip>
+  Add sentiment analysis to any query by including the phrase "classify by sentiment" or "what is the sentiment" in your prompt. BitKit will automatically run its sentiment model and populate the `sentiment` field on each record.
+</Tip>
+
+## Prompt writing FAQ
+
+<AccordionGroup>
+  <Accordion title="What makes a good query prompt?">
+    The most effective prompts are specific about three things: **subject** (what or who you're researching), **platform** (where you want to look), and **time frame** (how recent the data should be).
+
+    A vague prompt like "what do people say about my brand" will return broad, unfocused results. A specific prompt like "What are the top complaints about Acme's pricing on Reddit and X in the last 30 days?" gives BitKit a clear scope and returns actionable data.
+
+    You don't need to use structured query syntax — write naturally, as if briefing a researcher.
+  </Accordion>
+  <Accordion title="Can I ask follow-up questions on the same results?">
+    Yes. Within your project workspace, you can refine a query or ask follow-up questions against the same result set without re-running a full fetch. Use the prompt bar in the dashboard to continue the conversation.
+  </Accordion>
+  <Accordion title="How far back does data go?">
+    Date range availability varies by source. Most social platforms support queries going back 12–24 months. Use the `date_range` parameter to target a specific window and avoid fetching more data than you need.
+  </Accordion>
+  <Accordion title="What happens if a source returns no results?">
+    BitKit returns an empty array for that source and continues fetching from others. The response includes a `sources_queried` summary so you can see which platforms were searched and how many records each returned.
+  </Accordion>
+</AccordionGroup>

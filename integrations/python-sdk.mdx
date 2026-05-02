@@ -1,0 +1,217 @@
+---
+title: "BitKit Python SDK installation and usage"
+description: "Install and use the BitKit Python SDK to run queries, manage jobs, and download results from your Python applications."
+---
+
+The BitKit Python SDK wraps the REST API in an idiomatic Python interface, handling authentication, request serialization, and response parsing for you. You can submit queries, create scheduled jobs, and download result files with just a few lines of code.
+
+## Installation
+
+<CodeGroup>
+
+```bash pip
+pip install bitkit
+```
+
+```bash pip (specific version)
+pip install "bitkit>=1.4"
+```
+
+```bash Poetry
+poetry add bitkit
+```
+
+</CodeGroup>
+
+<Note>
+  The SDK reads your API key from the `BITKIT_API_KEY` environment variable if you do not pass it explicitly. Set it once in your shell or `.env` file and omit the `api_key` argument in your code.
+
+  ```bash
+  export BITKIT_API_KEY="your_api_key_here"
+  ```
+</Note>
+
+## Initialization
+
+```python
+from bitkit import BitKit
+
+client = BitKit(api_key="YOUR_API_KEY")
+```
+
+If `BITKIT_API_KEY` is set in your environment, you can initialize without arguments:
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+```
+
+---
+
+## Run a query
+
+Submit a natural language prompt and wait for results. The `query` method polls until the query completes and returns the full result object.
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+
+result = client.query(
+    "How many times was Acme mentioned on X this week?",
+    sources=["x", "reddit"],
+)
+
+print(result.summary)
+print(f"Total results: {result.total_results}")
+```
+
+To submit a query with a date range and result limit:
+
+```python
+result = client.query(
+    "What is the overall sentiment around Acme on Reddit?",
+    sources=["reddit"],
+    date_range={"start": "2026-04-01T00:00:00Z", "end": "2026-04-30T23:59:59Z"},
+    limit=500,
+)
+
+for record in result.records:
+    print(record)
+```
+
+---
+
+## Get query status
+
+If you want to submit a query and check its status independently, use the `queries.get` method.
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+
+# Submit without waiting
+query = client.queries.submit(
+    prompt="Which competitor gets the most positive mentions on LinkedIn?",
+    sources=["linkedin"],
+)
+
+print(f"Query ID: {query.id}, Status: {query.status}")
+
+# Poll later
+result = client.queries.get(query.id)
+print(result.status)
+```
+
+---
+
+## Create a scheduled job
+
+Use `client.jobs.create` to schedule a query to run automatically on a cron schedule.
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+
+job = client.jobs.create(
+    name="Daily Acme mentions",
+    prompt="How many times was Acme mentioned on X today?",
+    sources=["x"],
+    schedule="0 8 * * *",  # Every day at 08:00 UTC
+    webhook_url="https://yourapp.example.com/webhooks/bitkit",
+)
+
+print(f"Job created: {job.id}")
+print(f"Next run: {job.next_run_at}")
+```
+
+---
+
+## Manage jobs
+
+List, pause, and delete jobs using the `client.jobs` namespace.
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+
+# List all jobs
+jobs = client.jobs.list()
+for job in jobs:
+    print(f"{job.name} — {job.status}")
+
+# Pause a job
+client.jobs.update(job_id="job_01hx9jk2p4n5m6r7s8t9u0v1w", status="paused")
+
+# Delete a job
+client.jobs.delete(job_id="job_01hx9jk2p4n5m6r7s8t9u0v1w")
+```
+
+---
+
+## List storage files
+
+BitKit stores each job run result as a JSON file. Use `client.storage.list` to browse available files.
+
+```python
+from bitkit import BitKit
+
+client = BitKit()
+
+files = client.storage.list()
+for file in files:
+    print(f"{file.key} — {file.size_bytes} bytes — {file.created_at}")
+```
+
+---
+
+## Download a result file
+
+Download the raw JSON content of a result file by its key.
+
+```python
+import json
+from bitkit import BitKit
+
+client = BitKit()
+
+files = client.storage.list()
+latest = files[0]
+
+data = client.storage.download(latest.key)
+parsed = json.loads(data)
+
+print(f"Summary: {parsed['result']['summary']}")
+print(f"Records: {len(parsed['result']['records'])}")
+```
+
+---
+
+## Full example
+
+The following script submits a query, waits for results, and prints a summary:
+
+```python
+import os
+from bitkit import BitKit
+
+client = BitKit(api_key=os.environ["BITKIT_API_KEY"])
+
+result = client.query(
+    "Show me trending hashtags related to AI on TikTok this month",
+    sources=["tiktok"],
+    limit=100,
+)
+
+if result.status == "completed":
+    print("Summary:", result.summary)
+    print("Top records:")
+    for record in result.records[:5]:
+        print(" -", record)
+else:
+    print("Query failed:", result.error)
+```

@@ -1,0 +1,105 @@
+---
+title: "Schedule recurring queries with BitKit jobs"
+description: "BitKit jobs let you run queries on a schedule. Learn how to create, configure, and monitor jobs that run automatically."
+---
+
+A BitKit job is a saved query that runs automatically on a schedule. Instead of manually re-running the same query every day or every few hours, you configure a job once and BitKit handles the rest — fetching fresh data at each interval, storing results in your project workspace, and keeping a full history of every run. Jobs are the foundation of any ongoing monitoring workflow, from brand mention tracking to competitive intelligence to automated data pipelines.
+
+## Creating a job
+
+You can create a job from the dashboard or via the API.
+
+### From the dashboard
+
+<Steps>
+  <Step title="Open the Jobs tab">
+    In your project workspace, navigate to **Dashboard → Jobs**. Click **New Job** in the top right.
+  </Step>
+  <Step title="Write your query prompt">
+    Enter the prompt you want to run on each cycle. You can use any query parameters (sources, date range, limit) that you would use in a one-off query.
+  </Step>
+  <Step title="Set a schedule">
+    Choose a preset interval (every hour, every 6 hours, daily at 08:00) or enter a custom cron expression for precise control.
+  </Step>
+  <Step title="Save and activate">
+    Click **Save**. The job starts in the `active` state and will execute at the next scheduled time.
+  </Step>
+</Steps>
+
+### Via the API
+
+```json
+{
+  "name": "Daily Acme brand mentions",
+  "prompt": "How many people mentioned Acme on X and Reddit today?",
+  "sources": ["x", "reddit"],
+  "schedule": {
+    "type": "cron",
+    "expression": "0 8 * * *"
+  },
+  "limit": 500
+}
+```
+
+The above example creates a job that runs every day at 08:00 UTC. BitKit stores each run's results in your project workspace under **Storage**.
+
+## Schedule formats
+
+Jobs support two scheduling formats:
+
+**Simple intervals** — plain-language shortcuts for common cadences:
+
+| Interval | Description |
+|---|---|
+| `"every_hour"` | Runs at the top of every hour |
+| `"every_6_hours"` | Runs at 00:00, 06:00, 12:00, 18:00 UTC |
+| `"every_12_hours"` | Runs at 00:00 and 12:00 UTC |
+| `"daily"` | Runs once per day at 00:00 UTC |
+
+**Cron expressions** — for precise scheduling:
+
+```json
+{
+  "schedule": {
+    "type": "cron",
+    "expression": "0 8 * * 1-5"
+  }
+}
+```
+
+The example above runs at 08:00 UTC Monday through Friday. Standard five-field cron syntax is supported: `minute hour day-of-month month day-of-week`.
+
+## Job states
+
+Each job is always in one of the following states:
+
+| State | Description |
+|---|---|
+| `active` | The job is enabled and will run at the next scheduled time |
+| `running` | The job is currently executing a fetch cycle |
+| `paused` | The job is temporarily disabled. No runs will occur until you resume it |
+| `failed` | The last run encountered an error. The job will not retry automatically until you inspect and resume it |
+
+You can pause, resume, or delete any job from **Dashboard → Jobs**.
+
+## Result storage and run history
+
+Every time a job runs, BitKit stores the full result set in your project workspace. You can access results from:
+
+- **Dashboard → Storage** — browse raw result records from any job run
+- **Dashboard → Analytics** — view aggregated charts and summaries across runs
+- **Dashboard → Jobs** — see the full run history for a specific job, including run time, record count, and status
+
+The job detail view also shows:
+
+- **Last sync** — the timestamp of the most recent completed run
+- **Next sync** — the scheduled time of the next run
+- **Done today / Upcoming** — a timeline of today's runs and what remains
+
+## Viewing next sync time
+
+In the Jobs tab, each active job displays its next scheduled run time. You can also trigger an immediate run at any time by clicking **Sync now** on the job detail page — this does not affect the regular schedule.
+
+<Tip>
+  Combine jobs with webhooks to get real-time alerts when new results arrive. Configure a webhook endpoint in your project settings, and BitKit will POST the results of each job run to your URL as soon as the fetch completes. This lets you trigger downstream workflows — Slack notifications, database writes, or custom pipelines — without polling the API.
+</Tip>

@@ -1,0 +1,100 @@
+---
+title: "Monitor brand mentions across social platforms"
+description: "Use BitKit to track brand mentions on X, Reddit, LinkedIn, and more. Schedule recurring jobs and receive webhook alerts when each run completes."
+---
+
+Brand monitoring in BitKit lets you ask a plain-English question about your brand and receive a structured count of mentions, unique users, and a per-source breakdown — all in one response. You can run these queries on demand or schedule them to run automatically, and configure a webhook to notify your team the moment results are ready.
+
+## Run a one-off brand mention query
+
+Start by sending a single query to see how many times your brand was mentioned across the platforms you care about.
+
+<Steps>
+  <Step title="Send a brand mention query">
+    Use the `/query` endpoint with a natural language prompt. Replace `YourBrand` with your actual brand name.
+
+    ```bash
+    curl -X POST https://api.bitkit.dev/v1/queries \
+      -H "Authorization: Bearer $BITKIT_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "How many times was YourBrand mentioned on X, Reddit, and LinkedIn in the last 7 days?",
+        "sources": ["x", "reddit", "linkedin"]
+      }'
+    ```
+
+    BitKit returns a structured JSON response with mention counts per source.
+
+    ```json
+    {
+      "query_id": "qry_01j9zt3pk2examp1e",
+      "status": "completed",
+      "result": {
+        "total_mentions": 1482,
+        "unique_users": 934,
+        "date_range": {
+          "from": "2026-04-23",
+          "to": "2026-04-30"
+        },
+        "by_source": {
+          "x": {
+            "mentions": 874,
+            "unique_users": 611
+          },
+          "reddit": {
+            "mentions": 403,
+            "unique_users": 218
+          },
+          "linkedin": {
+            "mentions": 205,
+            "unique_users": 105
+          }
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Review results in the dashboard">
+    Open the **Dashboard** in your BitKit workspace. Navigate to **Jobs** and click the completed query to see:
+
+    - **Total Mentions** — total number of times your brand appeared across all selected sources.
+    - **Unique Users** — number of distinct users who authored those mentions.
+    - **Per-source breakdown** — a table and chart comparing mention volume on X, Reddit, and LinkedIn.
+
+    Use the date picker at the top of the results page to adjust the window and re-run the query inline.
+  </Step>
+
+  <Step title="Schedule a recurring job">
+    To monitor brand mentions every morning without manual effort, schedule the query as a recurring job. Set the `schedule` field using a cron expression.
+
+    ```json
+    {
+      "prompt": "How many times was YourBrand mentioned on X, Reddit, and LinkedIn in the last 7 days?",
+      "sources": ["x", "reddit", "linkedin"],
+      "schedule": "0 8 * * *"
+    }
+    ```
+
+    This cron expression runs the job every day at 08:00 UTC. BitKit stores each run's results in **Storage** under a timestamped key so you can compare results over time.
+  </Step>
+
+  <Step title="Set up a webhook notification">
+    Add a `webhook_url` to your job configuration. BitKit sends a POST request to that URL whenever a scheduled run completes.
+
+    ```json
+    {
+      "prompt": "How many times was YourBrand mentioned on X, Reddit, and LinkedIn in the last 7 days?",
+      "sources": ["x", "reddit", "linkedin"],
+      "schedule": "0 8 * * *",
+      "webhook_url": "https://your-service.example.com/hooks/bitkit"
+    }
+    ```
+
+    The webhook payload includes the `query_id`, `status`, and a `result_url` pointing to the full result in Storage. Your service can fetch the result, post a summary to Slack, or trigger downstream processing.
+  </Step>
+</Steps>
+
+<Note>
+  You can adjust the date range in your prompt at any time — for example, swap "last 7 days" for "last 30 days" or a specific date range like "between April 1 and April 15". You can also add or remove sources by editing the `sources` array. Supported sources are: `x`, `reddit`, `linkedin`, `instagram`, `youtube`, `tiktok`, `facebook`, `google`, and `github`.
+</Note>

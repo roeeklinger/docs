@@ -1,0 +1,86 @@
+{
+  "projectType": "saas",
+  "projectName": "BitKit",
+  "projectDescription": "BitKit is an AI-powered platform that lets you query the open web in natural language, automatically fetching, analyzing, and visualizing data from 13,000+ sources across social media and the broader web.",
+  "theme": "luma",
+  "primaryColor": "#6366F1",
+  "lightColor": "#EEF2FF",
+  "darkColor": "#1E1B4B",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/natural-language-queries",
+              "concepts/data-sources",
+              "concepts/data-stitching",
+              "concepts/jobs-and-scheduling"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/brand-monitoring",
+              "guides/sentiment-analysis",
+              "guides/competitor-intelligence",
+              "guides/exporting-data"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/rest-api",
+              "integrations/python-sdk",
+              "integrations/typescript-sdk",
+              "integrations/go-sdk",
+              "integrations/webhooks",
+              "integrations/s3-storage"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "account/plans-and-billing",
+              "account/privacy-and-data",
+              "account/api-keys"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Natural language query interface for the open web",
+    "AI-powered scraping across 13,000+ sources including social media platforms",
+    "Sentiment analysis and data visualization (charts, summaries)",
+    "Entity resolution and data stitching across sources",
+    "Scheduled jobs and webhook alerts",
+    "S3-compatible storage for query results",
+    "REST API and SDKs for Python, TypeScript, and Go",
+    "Secure SSO and social login (Google, GitHub)"
+  ],
+  "publicApiSurface": [
+    "POST /queries — submit a natural language query",
+    "GET /queries/{id} — retrieve query results",
+    "GET /jobs — list scheduled jobs",
+    "POST /jobs — create a scheduled job",
+    "DELETE /jobs/{id} — delete a scheduled job",
+    "GET /storage — list stored result files",
+    "GET /storage/{key} — download a result file",
+    "POST /webhooks — register a webhook endpoint",
+    "Python SDK: bitkit.query(prompt, sources=...)",
+    "TypeScript SDK: bitkit.query(prompt, options)",
+    "Go SDK: bitkit.Query(ctx, prompt, opts)"
+  ]
+}
