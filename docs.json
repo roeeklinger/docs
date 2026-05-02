@@ -8,13 +8,33 @@
     "dark": "#7f8fff"
   },
   "navbar": {
+    "links": [
+      {
+        "label": "Book a Demo",
+        "href": "https://bitkit-blond.vercel.app/"
+      }
+    ],
     "primary": {
-      "type": "github",
-      "href": "https://github.com/bitkit"
-    },
-    "links": []
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://bitkit-blond.vercel.app/"
+    }
   },
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/bitkit",
+          "icon": "brand-github"
+        },
+        {
+          "anchor": "Status",
+          "href": "https://status.example.com",
+          "icon": "chart-bar"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Documentation",
