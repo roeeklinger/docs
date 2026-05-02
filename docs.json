@@ -37,7 +37,7 @@
     },
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Home",
         "groups": [
           {
             "group": "Get Started",
@@ -85,6 +85,15 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Guide"
+      },
+      {
+        "tab": "API References"
+      },
+      {
+        "tab": "FAQ"
       }
     ]
   },
