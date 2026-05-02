@@ -91,5 +91,8 @@
       "github": "https://github.com/test",
       "reddit": "https://test.com"
     }
+  },
+  "icons": {
+    "library": "tabler"
   }
 }
