@@ -65,6 +65,15 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Guide"
+      },
+      {
+        "tab": "API References"
+      },
+      {
+        "tab": "FAQ"
       }
     ]
   },
