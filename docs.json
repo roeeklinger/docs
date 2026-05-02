@@ -114,6 +114,5 @@
   "icons": {
     "library": "tabler"
   },
-  "favicon": "/images/logo-pixel-b.svg",
-  "logo": "/images/logo-pixel-b.svg"
+  "favicon": "/images/logo-pixel-b.svg"
 }
