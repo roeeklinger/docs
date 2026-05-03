@@ -8,6 +8,10 @@
   --bk-primary-65: color-mix(in oklch, var(--bk-primary) 65%, var(--bk-bg));
   --bk-primary-75: color-mix(in oklch, var(--bk-primary) 75%, var(--bk-bg));
 
+  /* matches our design system's --muted (dark) */
+  --bk-muted: oklch(0.278 0.033 256.848);
+  --bk-muted-50: color-mix(in oklch, var(--bk-muted) 50%, transparent);
+
   /* our design system radiuses */
   /* --rounded-none: 0px;
   --rounded-xs: 2px;
@@ -107,15 +111,35 @@
 .accordion {
   background-color: var(--mint-background) !important;
 }
-
 .accordion[open] {
   background-color: color-mix(in oklch, var(--bk-primary-soft) 5%, var(--mint-color-background)) !important;
 }
-
 .accordion > summary[data-component-part="accordion-button"]:hover {
   background-color: color-mix(in oklch, var(--bk-primary-soft) 5%, var(--mint-color-background)) !important;
 }
 
+/* sidebar nav items - match the ghost button variant's hover bg */
+#sidebar .link.nav-anchor:hover {
+  background-color: var(--bk-muted-50) !important;
+}
+#sidebar  .link.nav-anchor {
+  padding: .375rem .75rem !important;
+  margin: 0px !important;
+  border-radius: var(--rounded-xl) !important;
+}
+#sidebar li + li > .link.nav-anchor {
+  margin-top: 0.4rem !important;
+}
+/* keep the icon container stable - Mintlify injects an inline
+   `background: var(--primary)` on hover and toggles `ring-0`. Override
+   unconditionally (not gated on :hover) so quick mouse movements can't
+   flash primary before the :hover selector resolves. */
+#sidebar .link.nav-anchor > div:has(> svg) {
+  background: var(--bk-bg) !important;
+  box-shadow: 0 0 0 1px rgb(var(--gray-700) / 0.4) !important;
+}
+
+/* CTA Button - aligned with our design system */
 #topbar-cta-button > a {
   height: 1.75rem !important;
   padding: 0 0.5rem !important;
@@ -125,29 +149,23 @@
   background: var(--bk-primary-50) !important;
   transition: all 150ms ease !important;
 }
-
 #topbar-cta-button > a:hover {
   background: var(--bk-primary-65) !important;
   border-color: var(--bk-primary-light) !important;
 }
-
 #topbar-cta-button > a:active {
   background: var(--bk-primary-75) !important;
   transform: translateY(1px);
 }
-
 #topbar-cta-button > a:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in oklch, var(--bk-primary) 30%, transparent) !important;
 }
-
 #topbar-cta-button > a > span:first-child {
   display: none !important;
 }
-
 #topbar-cta-button > a > div {
   margin-right: 0 !important;
 }
-
 #topbar-cta-button > a > div > span {
   color: var(--bk-primary-foreground) !important;
   font-size: 0.75rem !important;
