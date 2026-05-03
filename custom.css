@@ -1,6 +1,7 @@
 :root {
   --bk-bg: oklch(0.13 0.028 261.692);
   --bk-primary: oklch(0.7 0.19 275);
+  --bk-primary-soft: oklch(0.82 0.12 275);
   --bk-primary-foreground: oklch(0.985 0 0);
   --bk-primary-light: oklch(0.78 0.19 275);
   --bk-primary-50: color-mix(in oklch, var(--bk-primary) 50%, var(--bk-bg));
@@ -108,11 +109,11 @@
 }
 
 .accordion[open] {
-  background-color: color-mix(in oklch, var(--bk-primary) 5%, var(--mint-color-background)) !important;
+  background-color: color-mix(in oklch, var(--bk-primary-soft) 5%, var(--mint-color-background)) !important;
 }
 
 .accordion > summary[data-component-part="accordion-button"]:hover {
-  background-color: color-mix(in oklch, var(--bk-primary) 5%, var(--mint-color-background)) !important;
+  background-color: color-mix(in oklch, var(--bk-primary-soft) 5%, var(--mint-color-background)) !important;
 }
 
 #topbar-cta-button > a {
