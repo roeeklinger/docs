@@ -20,6 +20,11 @@
       "href": "https://bitkit-blond.vercel.app/"
     }
   },
+  "styling": {
+    "codeblocks": {
+      "theme": "css-variables"
+    }
+  },
   "navigation": {
     "global": {
       "anchors": [

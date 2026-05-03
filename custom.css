@@ -38,6 +38,68 @@
   --rounded-full: calc(0.571428571 * 9999px);
   /* a custom radius for search, used by Mintlify */
   --rounded-search: calc(0.571428571 * 20px);
+
+  /* === BitKit code theme (Shiki via CSS variables) ===
+     Brand-purple-led, cool palette, one warm amber note for numbers.
+     Keywords use brand purple; parameters use a lighter purple of the
+     same hue, mirroring the app's monochrome-purple chart palette. */
+
+  /* Base */
+  --mint-color-text: #E2E8F0;
+  --mint-color-background: #0F1428;
+
+  /* Syntax tokens */
+  --mint-token-keyword: #B79EFF;
+  --mint-token-string: #7EE2A8;
+  --mint-token-string-expression: #7EE2A8;
+  --mint-token-comment: #6B7588;
+  --mint-token-constant: #F2C97D;
+  --mint-token-function: #7BC8E7;
+  --mint-token-parameter: #D4BBFF;
+  --mint-token-punctuation: #8794A8;
+  --mint-token-link: #7F8FFF;
+
+  /* ANSI — terminal output */
+  --mint-ansi-black: #1A2038;
+  --mint-ansi-red: #FF8B7A;
+  --mint-ansi-green: #7EE2A8;
+  --mint-ansi-yellow: #F2C97D;
+  --mint-ansi-blue: #7BC8E7;
+  --mint-ansi-magenta: #B79EFF;
+  --mint-ansi-cyan: #80DBC9;
+  --mint-ansi-white: #C9D1E0;
+
+  --mint-ansi-bright-black: #3A4458;
+  --mint-ansi-bright-red: #FFB1A4;
+  --mint-ansi-bright-green: #A8EFC2;
+  --mint-ansi-bright-yellow: #FAD9A1;
+  --mint-ansi-bright-blue: #A4D9F0;
+  --mint-ansi-bright-magenta: #D4BBFF;
+  --mint-ansi-bright-cyan: #A8E8DB;
+  --mint-ansi-bright-white: #E2E8F0;
+
+  /* ANSI dim variants */
+  --mint-ansi-black-dim: #0F1320;
+  --mint-ansi-red-dim: #5C2E2A;
+  --mint-ansi-green-dim: #2D5240;
+  --mint-ansi-yellow-dim: #5C4A2A;
+  --mint-ansi-blue-dim: #2A4858;
+  --mint-ansi-magenta-dim: #3F325C;
+  --mint-ansi-cyan-dim: #2E4F49;
+  --mint-ansi-white-dim: #4A5668;
+
+  --mint-ansi-bright-black-dim: #1F2438;
+  --mint-ansi-bright-red-dim: #7A413A;
+  --mint-ansi-bright-green-dim: #3F6B53;
+  --mint-ansi-bright-yellow-dim: #7A6238;
+  --mint-ansi-bright-blue-dim: #3F6B82;
+  --mint-ansi-bright-magenta-dim: #574680;
+  --mint-ansi-bright-cyan-dim: #3F6B66;
+  --mint-ansi-bright-white-dim: #6E798C;
+}
+
+.bg-codeblock {
+  background-color: var(--mint-background) !important;
 }
 
 #topbar-cta-button > a {
