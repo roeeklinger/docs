@@ -49,13 +49,13 @@
   --mint-color-background: #0F1428;
 
   /* Syntax tokens */
-  --mint-token-keyword: #B79EFF;
+  --mint-token-keyword: var(--bk-primary-light);
   --mint-token-string: #7EE2A8;
   --mint-token-string-expression: #7EE2A8;
   --mint-token-comment: #6B7588;
   --mint-token-constant: #F2C97D;
   --mint-token-function: #7BC8E7;
-  --mint-token-parameter: #D4BBFF;
+  --mint-token-parameter: var(--bk-primary-light);
   --mint-token-punctuation: #8794A8;
   --mint-token-link: #7F8FFF;
 
@@ -65,7 +65,7 @@
   --mint-ansi-green: #7EE2A8;
   --mint-ansi-yellow: #F2C97D;
   --mint-ansi-blue: #7BC8E7;
-  --mint-ansi-magenta: #B79EFF;
+  --mint-ansi-magenta: var(--bk-primary);
   --mint-ansi-cyan: #80DBC9;
   --mint-ansi-white: #C9D1E0;
 
@@ -74,7 +74,7 @@
   --mint-ansi-bright-green: #A8EFC2;
   --mint-ansi-bright-yellow: #FAD9A1;
   --mint-ansi-bright-blue: #A4D9F0;
-  --mint-ansi-bright-magenta: #D4BBFF;
+  --mint-ansi-bright-magenta: var(--bk-primary-light);
   --mint-ansi-bright-cyan: #A8E8DB;
   --mint-ansi-bright-white: #E2E8F0;
 
