@@ -39,7 +39,7 @@
   /* a custom radius for search, used by Mintlify */
   --rounded-search: calc(0.571428571 * 20px);
 
-  /* === BitKit code theme (Shiki via CSS variables) ===
+  /* === our code theme (Shiki via CSS variables) ===
      Brand-purple-led, cool palette, one warm amber note for numbers.
      Keywords use brand purple; parameters use a lighter purple of the
      same hue, mirroring the app's monochrome-purple chart palette. */
@@ -100,6 +100,19 @@
 
 .bg-codeblock {
   background-color: var(--mint-background) !important;
+}
+
+/* Accordion - aligned with our design system */
+.accordion {
+  background-color: var(--mint-background) !important;
+}
+
+.accordion[open] {
+  background-color: color-mix(in oklch, var(--bk-primary) 5%, var(--mint-color-background)) !important;
+}
+
+.accordion > summary[data-component-part="accordion-button"]:hover {
+  background-color: color-mix(in oklch, var(--bk-primary) 5%, var(--mint-color-background)) !important;
 }
 
 #topbar-cta-button > a {
