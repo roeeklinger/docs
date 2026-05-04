@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
-	<rect width="36" height="36" rx="7" fill="oklch(0.21 0.034 264.665)" />
+	<rect width="36" height="36" rx="7" fill="#030712" />
 	<g transform="translate(2 2)">
-		<g fill="oklch(0.7 0.19 275)" opacity="0.28">
+		<g fill="#7f8fff" opacity="0.28">
 			<rect x="24" y="4" width="4" height="4" rx="0.5" />
 			<rect x="9" y="9" width="4" height="4" rx="0.5" />
 			<rect x="14" y="9" width="4" height="4" rx="0.5" />
@@ -12,7 +12,7 @@
 			<rect x="19" y="19" width="4" height="4" rx="0.5" />
 			<rect x="24" y="24" width="4" height="4" rx="0.5" />
 		</g>
-		<g fill="oklch(0.7 0.19 275)">
+		<g fill="#7f8fff">
 			<rect x="4" y="4" width="4" height="4" rx="0.5" />
 			<rect x="9" y="4" width="4" height="4" rx="0.5" />
 			<rect x="14" y="4" width="4" height="4" rx="0.5" />
