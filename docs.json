@@ -120,5 +120,8 @@
     "library": "tabler"
   },
   "favicon": "/favicon.svg",
-  "logo": "/favicon.svg"
+  "logo": {
+    "light": "/images/FlattenedTransparentNoPadding.svg",
+    "dark": "/images/FlattenedTransparentNoPadding.svg"
+  }
 }
