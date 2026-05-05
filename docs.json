@@ -119,9 +119,6 @@
   "icons": {
     "library": "tabler"
   },
-  "favicon": "/favicon.svg",
-  "logo": {
-    "light": "/images/FlattenedTransparentNoPadding.svg",
-    "dark": "/images/FlattenedTransparentNoPadding.svg"
-  }
+  "favicon": "/images/favicon.svg",
+  "logo": "/images/FlattenedTransparentNoPadding.svg"
 }
