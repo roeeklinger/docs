@@ -265,7 +265,7 @@ header sections, so that there is no double border */
   /* extra X axis padding to restore original alignment across the layout
   now that the gutters are also taking some X axis space */
   #navbar > div.max-w-8xl {
-    padding-inline: 1rem !important;
+    padding-inline: 0.75rem !important;
   }
 }
 
