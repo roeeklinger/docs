@@ -1,20 +1,20 @@
 ---
 title: "Natural language queries"
-description: "BitKit queries let you ask questions in plain English. Learn how to write effective prompts, what parameters are available, and how results are structured."
+description: "ByteStack queries let you ask questions in plain English. Learn how to write effective prompts, what parameters are available, and how results are structured."
 ---
 
-BitKit lets you query the open web the same way you'd ask a question to a colleague — in plain English. You write a prompt describing what you want to find, and BitKit executes it across thousands of web sources, returning structured records you can explore, export, or pipe into downstream workflows. No query language, no manual scraping, no API wrangling required.
+ByteStack lets you query the open web the same way you'd ask a question to a colleague — in plain English. You write a prompt describing what you want to find, and ByteStack executes it across thousands of web sources, returning structured records you can explore, export, or pipe into downstream workflows. No query language, no manual scraping, no API wrangling required.
 
 ## How queries work
 
-When you submit a query, BitKit interprets your prompt, identifies the most relevant sources, fetches matching content, and returns structured results. You can optionally narrow the query to specific platforms, set a date range, or cap the number of records returned.
+When you submit a query, ByteStack interprets your prompt, identifies the most relevant sources, fetches matching content, and returns structured results. You can optionally narrow the query to specific platforms, set a date range, or cap the number of records returned.
 
 <Steps>
   <Step title="Write your prompt">
     Describe what you want to find in plain English. Be as specific as possible — mention platforms, time ranges, and the subject you care about.
   </Step>
-  <Step title="BitKit executes the query">
-    BitKit routes your prompt to the relevant sources, scrapes matching content, and runs any requested analysis (such as sentiment classification).
+  <Step title="ByteStack executes the query">
+    ByteStack routes your prompt to the relevant sources, scrapes matching content, and runs any requested analysis (such as sentiment classification).
   </Step>
   <Step title="Review structured results">
     Results appear in your project workspace as structured records with source, author, content, sentiment, and timestamp fields.
@@ -123,7 +123,7 @@ Each record includes the following fields:
 - **`url`** — direct link to the original content
 
 <Tip>
-  Add sentiment analysis to any query by including the phrase "classify by sentiment" or "what is the sentiment" in your prompt. BitKit will automatically run its sentiment model and populate the `sentiment` field on each record.
+  Add sentiment analysis to any query by including the phrase "classify by sentiment" or "what is the sentiment" in your prompt. ByteStack will automatically run its sentiment model and populate the `sentiment` field on each record.
 </Tip>
 
 ## Prompt writing FAQ
@@ -132,7 +132,7 @@ Each record includes the following fields:
   <Accordion title="What makes a good query prompt?">
     The most effective prompts are specific about three things: **subject** (what or who you're researching), **platform** (where you want to look), and **time frame** (how recent the data should be).
 
-    A vague prompt like "what do people say about my brand" will return broad, unfocused results. A specific prompt like "What are the top complaints about Acme's pricing on Reddit and X in the last 30 days?" gives BitKit a clear scope and returns actionable data.
+    A vague prompt like "what do people say about my brand" will return broad, unfocused results. A specific prompt like "What are the top complaints about Acme's pricing on Reddit and X in the last 30 days?" gives ByteStack a clear scope and returns actionable data.
 
     You don't need to use structured query syntax — write naturally, as if briefing a researcher.
   </Accordion>
@@ -143,6 +143,6 @@ Each record includes the following fields:
     Date range availability varies by source. Most social platforms support queries going back 12–24 months. Use the `date_range` parameter to target a specific window and avoid fetching more data than you need.
   </Accordion>
   <Accordion title="What happens if a source returns no results?">
-    BitKit returns an empty array for that source and continues fetching from others. The response includes a `sources_queried` summary so you can see which platforms were searched and how many records each returned.
+    ByteStack returns an empty array for that source and continues fetching from others. The response includes a `sources_queried` summary so you can see which platforms were searched and how many records each returned.
   </Accordion>
 </AccordionGroup>

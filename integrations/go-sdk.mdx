@@ -1,14 +1,14 @@
 ---
 title: "Go SDK"
-description: "Install the BitKit Go SDK and integrate natural language web queries into your Go services. Covers context-aware requests, polling, jobs, and storage downloads."
+description: "Install the ByteStack Go SDK and integrate natural language web queries into your Go services. Covers context-aware requests, polling, jobs, and storage downloads."
 ---
 
-The BitKit Go SDK provides a context-aware, fully typed client for the BitKit API. It follows standard Go conventions for error handling, uses `context.Context` for cancellation and timeouts, and ships with no external dependencies beyond the standard library. You can integrate it into any Go service, CLI, or background worker.
+The ByteStack Go SDK provides a context-aware, fully typed client for the ByteStack API. It follows standard Go conventions for error handling, uses `context.Context` for cancellation and timeouts, and ships with no external dependencies beyond the standard library. You can integrate it into any Go service, CLI, or background worker.
 
 ## Installation
 
 ```bash
-go get github.com/bitkit/bitkit-go
+go get github.com/bytestack/bytestack-go
 ```
 
 <Note>
@@ -23,11 +23,11 @@ package main
 import (
 	"os"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
 func main() {
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 }
 ```
 
@@ -46,14 +46,14 @@ import (
 	"os"
 	"time"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
 func main() {
 	ctx := context.Background()
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 
-	query, err := client.Queries.Submit(ctx, bitkit.QueryParams{
+	query, err := client.Queries.Submit(ctx, bytestack.QueryParams{
 		Prompt:  "How many times was Acme mentioned on X this week?",
 		Sources: []string{"x", "reddit"},
 		Limit:   250,
@@ -82,10 +82,10 @@ import (
 	"os"
 	"time"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
-func waitForQuery(ctx context.Context, client *bitkit.Client, queryID string) (*bitkit.QueryResult, error) {
+func waitForQuery(ctx context.Context, client *bytestack.Client, queryID string) (*bytestack.QueryResult, error) {
 	for {
 		result, err := client.Queries.Get(ctx, queryID)
 		if err != nil {
@@ -111,9 +111,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 
-	query, err := client.Queries.Submit(ctx, bitkit.QueryParams{
+	query, err := client.Queries.Submit(ctx, bytestack.QueryParams{
 		Prompt:  "What are the top complaints about our service on X?",
 		Sources: []string{"x"},
 	})
@@ -147,16 +147,16 @@ import (
 	"fmt"
 	"os"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
 func main() {
 	ctx := context.Background()
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 
-	webhookURL := "https://yourapp.example.com/webhooks/bitkit"
+	webhookURL := "https://yourapp.example.com/webhooks/bytestack"
 
-	job, err := client.Jobs.Create(ctx, bitkit.CreateJobParams{
+	job, err := client.Jobs.Create(ctx, bytestack.CreateJobParams{
 		Name:       "Daily Acme mentions",
 		Prompt:     "How many times was Acme mentioned on X today?",
 		Sources:    []string{"x"},
@@ -187,12 +187,12 @@ import (
 	"fmt"
 	"os"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
 func main() {
 	ctx := context.Background()
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 
 	// List all jobs
 	jobs, err := client.Jobs.List(ctx)
@@ -207,7 +207,7 @@ func main() {
 
 	// Pause a specific job
 	paused := "paused"
-	_, err = client.Jobs.Update(ctx, "job_01hx9jk2p4n5m6r7s8t9u0v1w", bitkit.UpdateJobParams{
+	_, err = client.Jobs.Update(ctx, "job_01hx9jk2p4n5m6r7s8t9u0v1w", bytestack.UpdateJobParams{
 		Status: &paused,
 	})
 	if err != nil {
@@ -241,12 +241,12 @@ import (
 	"fmt"
 	"os"
 
-	bitkit "github.com/bitkit/bitkit-go"
+	bytestack "github.com/bytestack/bytestack-go"
 )
 
 func main() {
 	ctx := context.Background()
-	client := bitkit.NewClient(os.Getenv("BITKIT_API_KEY"))
+	client := bytestack.NewClient(os.Getenv("BITKIT_API_KEY"))
 
 	files, err := client.Storage.List(ctx)
 	if err != nil {

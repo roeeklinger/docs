@@ -1,12 +1,12 @@
 ---
 title: "S3-compatible storage"
-description: "Configure BitKit to write query results to any S3-compatible bucket including AWS S3, Cloudflare R2, and MinIO."
+description: "Configure ByteStack to write query results to any S3-compatible bucket including AWS S3, Cloudflare R2, and MinIO."
 ---
 
-BitKit can automatically write each job run's results to your own S3-compatible bucket, giving you full control over data retention, access, and downstream processing. Once configured, results are pushed to your bucket after every run in addition to being available through BitKit's built-in storage API.
+ByteStack can automatically write each job run's results to your own S3-compatible bucket, giving you full control over data retention, access, and downstream processing. Once configured, results are pushed to your bucket after every run in addition to being available through ByteStack's built-in storage API.
 
 <Note>
-  BitKit's built-in storage retains result files until you explicitly delete them. Raw scrape logs are automatically purged after **90 days**. If you need longer retention or want to pipe results into your own data pipeline, connect your own bucket using the steps below.
+  ByteStack's built-in storage retains result files until you explicitly delete them. Raw scrape logs are automatically purged after **90 days**. If you need longer retention or want to pipe results into your own data pipeline, connect your own bucket using the steps below.
 </Note>
 
 ---
@@ -15,7 +15,7 @@ BitKit can automatically write each job run's results to your own S3-compatible 
 
 <Steps>
   <Step title="Open storage settings">
-    In the BitKit dashboard, go to **Settings → Storage → Connect Bucket**.
+    In the ByteStack dashboard, go to **Settings → Storage → Connect Bucket**.
   </Step>
   <Step title="Enter your bucket details">
     Provide the following details for your bucket:
@@ -28,7 +28,7 @@ BitKit can automatically write each job run's results to your own S3-compatible 
     | **Secret key** | Your storage secret access key. |
   </Step>
   <Step title="Save and verify">
-    Click **Save**. BitKit performs a test write to confirm credentials and permissions. You will see a confirmation message when the connection is active.
+    Click **Save**. ByteStack performs a test write to confirm credentials and permissions. You will see a confirmation message when the connection is active.
   </Step>
 </Steps>
 
@@ -36,7 +36,7 @@ BitKit can automatically write each job run's results to your own S3-compatible 
 
 ## Supported providers
 
-BitKit is compatible with any S3-compatible object store. Tested providers include:
+ByteStack is compatible with any S3-compatible object store. Tested providers include:
 
 <CardGroup cols={2}>
   <Card title="AWS S3" icon="brand-aws">
@@ -57,7 +57,7 @@ BitKit is compatible with any S3-compatible object store. Tested providers inclu
 
 ## File format and naming
 
-BitKit writes one JSON file per job run. Files are named using the following pattern:
+ByteStack writes one JSON file per job run. Files are named using the following pattern:
 
 ```
 {job_id}/{run_timestamp}.json
@@ -90,21 +90,21 @@ Each file contains the full result payload:
 
 ## Accessing files from the dashboard
 
-All result files — both from BitKit's built-in storage and from your connected bucket — are visible in the **Storage** tab of your project workspace. Click any file to preview its content or download it directly.
+All result files — both from ByteStack's built-in storage and from your connected bucket — are visible in the **Storage** tab of your project workspace. Click any file to preview its content or download it directly.
 
 ---
 
 ## Downloading via the API
 
-You can list and download result files programmatically using the BitKit storage endpoints, regardless of whether you have connected your own bucket.
+You can list and download result files programmatically using the ByteStack storage endpoints, regardless of whether you have connected your own bucket.
 
 <CodeGroup>
 
 ```python download_results.py
 import json
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 # List all result files
 files = client.storage.list()
@@ -125,9 +125,9 @@ for record in result["result"]["records"]:
 ```
 
 ```typescript download-results.ts
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 // List all result files
 const { files } = await client.storage.list();
@@ -155,7 +155,7 @@ for (const record of result.result.records) {
 
 ## Accessing files directly from your bucket
 
-When you connect your own S3-compatible bucket, BitKit writes files there directly. You can access them with any S3 client using your own credentials, independent of the BitKit API.
+When you connect your own S3-compatible bucket, ByteStack writes files there directly. You can access them with any S3 client using your own credentials, independent of the ByteStack API.
 
 ```python
 import boto3

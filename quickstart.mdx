@@ -1,14 +1,14 @@
 ---
-title: "Get started with BitKit"
-description: "Learn how to create an account, generate an API key, and run your first BitKit query in under five minutes."
+title: "Get started with ByteStack"
+description: "Learn how to create an account, generate an API key, and run your first ByteStack query in under five minutes."
 ---
 
-This guide walks you through creating a BitKit account, generating your first API key, and submitting a natural language query via the REST API. By the end you'll have a working request and a real response to explore.
+This guide walks you through creating a ByteStack account, generating your first API key, and submitting a natural language query via the REST API. By the end you'll have a working request and a real response to explore.
 
 <Steps>
 
   <Step title="Create your account">
-    Go to [app.bitkit.dev/signup](https://app.bitkit.dev/signup) and create a free account. You can sign up with Google, GitHub, or SSO, or register with an email address and password.
+    Go to [app.bytestack.dev/signup](https://app.bytestack.dev/signup) and create a free account. You can sign up with Google, GitHub, or SSO, or register with an email address and password.
 
     Once your account is created, you land in your project workspace. The free tier includes 1,000 queries per month at no cost — no credit card required to get started.
 
@@ -31,7 +31,7 @@ This guide walks you through creating a BitKit account, generating your first AP
     Send a `POST` request to `/v1/queries` with your natural language prompt and the sources you want to query. Pass your API key in the `Authorization` header.
 
     ```bash
-    curl -X POST https://api.bitkit.dev/v1/queries \
+    curl -X POST https://api.bytestack.dev/v1/queries \
       -H "Authorization: Bearer YOUR_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -65,7 +65,7 @@ This guide walks you through creating a BitKit account, generating your first AP
     }
     ```
 
-    You can also view query results in the **Dashboard** → **Jobs** panel of your project workspace, where BitKit displays charts and sentiment breakdowns alongside the raw counts.
+    You can also view query results in the **Dashboard** → **Jobs** panel of your project workspace, where ByteStack displays charts and sentiment breakdowns alongside the raw counts.
   </Step>
 
 </Steps>
@@ -77,7 +77,7 @@ This guide walks you through creating a BitKit account, generating your first AP
     Learn about key scopes, key rotation, and how to handle auth errors.
   </Card>
   <Card title="Core concepts" icon="book-2" href="/concepts/natural-language-queries">
-    Understand how BitKit translates prompts into targeted data fetches.
+    Understand how ByteStack translates prompts into targeted data fetches.
   </Card>
   <Card title="REST API" icon="code" href="/integrations/rest-api">
     Explore all available endpoints, parameters, and response schemas.

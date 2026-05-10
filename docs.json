@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "BitKit",
+  "name": "ByteStack",
   "colors": {
     "primary": "#7f8fff",
     "light": "#7f8fff",
@@ -11,13 +11,13 @@
     "links": [
       {
         "label": "Book a Demo",
-        "href": "https://bitkit-blond.vercel.app/"
+        "href": "https://bytestack-blond.vercel.app/"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://bitkit-blond.vercel.app/"
+      "href": "https://bytestack-blond.vercel.app/"
     }
   },
   "styling": {
@@ -30,7 +30,7 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/bitkit",
+          "href": "https://github.com/bytestack",
           "icon": "brand-github"
         },
         {
@@ -102,7 +102,7 @@
       }
     ]
   },
-  "description": "Learn how to use the BitKit platform",
+  "description": "Learn how to use the ByteStack platform",
   "background": {
     "color": {
       "light": "#030712",

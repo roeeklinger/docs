@@ -3,11 +3,11 @@ title: "Exporting data"
 description: "Download query results as JSON, stream to S3-compatible storage, or push to your data stack using the REST API and webhooks."
 ---
 
-Every query BitKit runs produces a structured JSON result that is stored in your workspace's Storage. You can download individual results manually from the dashboard, pull them programmatically via the REST API, sync them automatically to your own S3-compatible bucket, or receive a webhook notification the moment a result is ready — then fetch it on demand.
+Every query ByteStack runs produces a structured JSON result that is stored in your workspace's Storage. You can download individual results manually from the dashboard, pull them programmatically via the REST API, sync them automatically to your own S3-compatible bucket, or receive a webhook notification the moment a result is ready — then fetch it on demand.
 
 ## Download from the dashboard
 
-The simplest way to get a result file is directly from the BitKit dashboard.
+The simplest way to get a result file is directly from the ByteStack dashboard.
 
 1. Open your workspace and click **Storage** in the top navigation.
 2. Each completed query appears as a file with a timestamped key, for example `qry_01j9zt3pk2examp1e_2026-04-30T08-00-00Z.json`.
@@ -20,7 +20,7 @@ Use this method for ad-hoc exports or when sharing a result with a stakeholder w
 Pull any result file programmatically using the `GET /storage/{key}` endpoint.
 
 ```bash
-curl -X GET "https://api.bitkit.dev/v1/storage/qry_01j9zt3pk2examp1e" \
+curl -X GET "https://api.bytestack.dev/v1/storage/qry_01j9zt3pk2examp1e" \
   -H "Authorization: Bearer $BITKIT_API_KEY" \
   --output result.json
 ```
@@ -29,16 +29,16 @@ Replace `qry_01j9zt3pk2examp1e` with the `query_id` returned when you created th
 
 ## Sync to S3-compatible storage
 
-For continuous pipelines, configure BitKit to write results directly to your own bucket after every job run.
+For continuous pipelines, configure ByteStack to write results directly to your own bucket after every job run.
 
 1. Open **Settings → Storage** in the dashboard.
 2. Enter your bucket details:
    - **Endpoint** — your S3-compatible endpoint URL (e.g., `https://s3.us-east-1.amazonaws.com` or a self-hosted endpoint).
    - **Bucket name** — the target bucket.
    - **Access key ID** and **Secret access key** — credentials with `s3:PutObject` permission.
-3. Click **Save and test**. BitKit uploads a small verification file to confirm access.
+3. Click **Save and test**. ByteStack uploads a small verification file to confirm access.
 
-Once configured, BitKit writes each job result to your bucket automatically. Files are named using the pattern `bitkit/{query_id}/{timestamp}.json`, making them easy to partition and query in tools like Athena or BigQuery.
+Once configured, ByteStack writes each job result to your bucket automatically. Files are named using the pattern `bytestack/{query_id}/{timestamp}.json`, making them easy to partition and query in tools like Athena or BigQuery.
 
 ## Stream results with webhooks
 
@@ -51,11 +51,11 @@ Add a `webhook_url` to any job configuration:
   "prompt": "How many times was YourBrand mentioned on X this week?",
   "sources": ["x"],
   "schedule": "0 8 * * *",
-  "webhook_url": "https://your-service.example.com/hooks/bitkit"
+  "webhook_url": "https://your-service.example.com/hooks/bytestack"
 }
 ```
 
-After each run, BitKit sends a POST request to your URL with a payload like this:
+After each run, ByteStack sends a POST request to your URL with a payload like this:
 
 ```json
 {
@@ -63,7 +63,7 @@ After each run, BitKit sends a POST request to your URL with a payload like this
   "query_id": "qry_01j9zt3pk2examp1e",
   "status": "completed",
   "completed_at": "2026-04-30T08:01:14Z",
-  "result_url": "https://api.bitkit.dev/v1/storage/qry_01j9zt3pk2examp1e"
+  "result_url": "https://api.bytestack.dev/v1/storage/qry_01j9zt3pk2examp1e"
 }
 ```
 
@@ -74,7 +74,7 @@ Your service can use `result_url` to fetch the full result immediately, then for
 <CodeGroup>
 
 ```bash curl
-curl -X GET "https://api.bitkit.dev/v1/storage/qry_01j9zt3pk2examp1e" \
+curl -X GET "https://api.bytestack.dev/v1/storage/qry_01j9zt3pk2examp1e" \
   -H "Authorization: Bearer $BITKIT_API_KEY" \
   --output result.json
 ```
@@ -87,7 +87,7 @@ api_key = os.environ["BITKIT_API_KEY"]
 query_id = "qry_01j9zt3pk2examp1e"
 
 response = requests.get(
-    f"https://api.bitkit.dev/v1/storage/{query_id}",
+    f"https://api.bytestack.dev/v1/storage/{query_id}",
     headers={"Authorization": f"Bearer {api_key}"},
 )
 response.raise_for_status()
@@ -105,7 +105,7 @@ const apiKey = process.env.BITKIT_API_KEY!;
 const queryId = "qry_01j9zt3pk2examp1e";
 
 const response = await fetch(
-  `https://api.bitkit.dev/v1/storage/${queryId}`,
+  `https://api.bytestack.dev/v1/storage/${queryId}`,
   {
     headers: { Authorization: `Bearer ${apiKey}` },
   }

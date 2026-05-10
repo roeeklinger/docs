@@ -1,24 +1,24 @@
 ---
 title: "Python SDK"
-description: "Install and use the BitKit Python SDK to run queries, manage jobs, and download results from your Python applications."
+description: "Install and use the ByteStack Python SDK to run queries, manage jobs, and download results from your Python applications."
 ---
 
-The BitKit Python SDK wraps the REST API in an idiomatic Python interface, handling authentication, request serialization, and response parsing for you. You can submit queries, create scheduled jobs, and download result files with just a few lines of code.
+The ByteStack Python SDK wraps the REST API in an idiomatic Python interface, handling authentication, request serialization, and response parsing for you. You can submit queries, create scheduled jobs, and download result files with just a few lines of code.
 
 ## Installation
 
 <CodeGroup>
 
 ```bash pip
-pip install bitkit
+pip install bytestack
 ```
 
 ```bash pip (specific version)
-pip install "bitkit>=1.4"
+pip install "bytestack>=1.4"
 ```
 
 ```bash Poetry
-poetry add bitkit
+poetry add bytestack
 ```
 
 </CodeGroup>
@@ -34,17 +34,17 @@ poetry add bitkit
 ## Initialization
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit(api_key="YOUR_API_KEY")
+client = ByteStack(api_key="YOUR_API_KEY")
 ```
 
 If `BITKIT_API_KEY` is set in your environment, you can initialize without arguments:
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 ```
 
 ---
@@ -54,9 +54,9 @@ client = BitKit()
 Submit a natural language prompt and wait for results. The `query` method polls until the query completes and returns the full result object.
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 result = client.query(
     "How many times was Acme mentioned on X this week?",
@@ -88,9 +88,9 @@ for record in result.records:
 If you want to submit a query and check its status independently, use the `queries.get` method.
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 # Submit without waiting
 query = client.queries.submit(
@@ -112,16 +112,16 @@ print(result.status)
 Use `client.jobs.create` to schedule a query to run automatically on a cron schedule.
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 job = client.jobs.create(
     name="Daily Acme mentions",
     prompt="How many times was Acme mentioned on X today?",
     sources=["x"],
     schedule="0 8 * * *",  # Every day at 08:00 UTC
-    webhook_url="https://yourapp.example.com/webhooks/bitkit",
+    webhook_url="https://yourapp.example.com/webhooks/bytestack",
 )
 
 print(f"Job created: {job.id}")
@@ -135,9 +135,9 @@ print(f"Next run: {job.next_run_at}")
 List, pause, and delete jobs using the `client.jobs` namespace.
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 # List all jobs
 jobs = client.jobs.list()
@@ -155,12 +155,12 @@ client.jobs.delete(job_id="job_01hx9jk2p4n5m6r7s8t9u0v1w")
 
 ## List storage files
 
-BitKit stores each job run result as a JSON file. Use `client.storage.list` to browse available files.
+ByteStack stores each job run result as a JSON file. Use `client.storage.list` to browse available files.
 
 ```python
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 files = client.storage.list()
 for file in files:
@@ -175,9 +175,9 @@ Download the raw JSON content of a result file by its key.
 
 ```python
 import json
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit()
+client = ByteStack()
 
 files = client.storage.list()
 latest = files[0]
@@ -197,9 +197,9 @@ The following script submits a query, waits for results, and prints a summary:
 
 ```python
 import os
-from bitkit import BitKit
+from bytestack import ByteStack
 
-client = BitKit(api_key=os.environ["BITKIT_API_KEY"])
+client = ByteStack(api_key=os.environ["BITKIT_API_KEY"])
 
 result = client.query(
     "Show me trending hashtags related to AI on TikTok this month",

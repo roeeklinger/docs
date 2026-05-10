@@ -1,24 +1,24 @@
 ---
 title: "TypeScript SDK"
-description: "Install and use the BitKit TypeScript SDK to query the open web, schedule jobs, and stream results into your Node.js or browser applications."
+description: "Install and use the ByteStack TypeScript SDK to query the open web, schedule jobs, and stream results into your Node.js or browser applications."
 ---
 
-The BitKit TypeScript SDK provides a fully typed client for the BitKit API, making it straightforward to submit queries, manage scheduled jobs, and download results in Node.js or browser environments. All methods return typed promises, so you get autocomplete and compile-time safety out of the box.
+The ByteStack TypeScript SDK provides a fully typed client for the ByteStack API, making it straightforward to submit queries, manage scheduled jobs, and download results in Node.js or browser environments. All methods return typed promises, so you get autocomplete and compile-time safety out of the box.
 
 ## Installation
 
 <CodeGroup>
 
 ```bash npm
-npm install @bitkit/sdk
+npm install @bytestack/sdk
 ```
 
 ```bash pnpm
-pnpm add @bitkit/sdk
+pnpm add @bytestack/sdk
 ```
 
 ```bash yarn
-yarn add @bitkit/sdk
+yarn add @bytestack/sdk
 ```
 
 </CodeGroup>
@@ -34,17 +34,17 @@ yarn add @bitkit/sdk
 ## Initialization
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 ```
 
 You can also pass the key explicitly:
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: 'YOUR_API_KEY' });
+const client = new ByteStack({ apiKey: 'YOUR_API_KEY' });
 ```
 
 ---
@@ -54,9 +54,9 @@ const client = new BitKit({ apiKey: 'YOUR_API_KEY' });
 Use `client.query()` to submit a natural language prompt and await the completed result.
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 const result = await client.query({
   prompt: 'How many times was Acme mentioned on X this week?',
@@ -70,9 +70,9 @@ console.log(`Total results: ${result.totalResults}`);
 With an optional date range and result limit:
 
 ```typescript
-import { BitKit, QueryOptions } from '@bitkit/sdk';
+import { ByteStack, QueryOptions } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 const options: QueryOptions = {
   prompt: 'What is the sentiment around our latest product launch on Reddit?',
@@ -98,9 +98,9 @@ for (const record of result.records) {
 Submit a query without awaiting completion, then poll for its status separately.
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 // Submit without waiting for completion
 const query = await client.queries.submit({
@@ -122,16 +122,16 @@ console.log(result.status);
 Schedule a query to run automatically using a cron expression.
 
 ```typescript
-import { BitKit, CreateJobOptions } from '@bitkit/sdk';
+import { ByteStack, CreateJobOptions } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 const jobOptions: CreateJobOptions = {
   name: 'Daily Acme mentions',
   prompt: 'How many times was Acme mentioned on X today?',
   sources: ['x'],
   schedule: '0 8 * * *', // Every day at 08:00 UTC
-  webhookUrl: 'https://yourapp.example.com/webhooks/bitkit',
+  webhookUrl: 'https://yourapp.example.com/webhooks/bytestack',
 };
 
 const job = await client.jobs.create(jobOptions);
@@ -147,9 +147,9 @@ console.log(`Next run: ${job.nextRunAt}`);
 List, pause, and delete jobs using the typed `client.jobs` namespace.
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 // List all jobs
 const { jobs } = await client.jobs.list();
@@ -168,12 +168,12 @@ await client.jobs.delete('job_01hx9jk2p4n5m6r7s8t9u0v1w');
 
 ## List and download storage files
 
-Each job run produces a JSON result file stored by BitKit. Use `client.storage` to browse and download them.
+Each job run produces a JSON result file stored by ByteStack. Use `client.storage` to browse and download them.
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
-const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
 // List available files
 const { files } = await client.storage.list();
@@ -197,10 +197,10 @@ console.log('Records:', parsed.result.records.length);
 The following script ties together query submission, result handling, and error logging in a single async function:
 
 ```typescript
-import { BitKit } from '@bitkit/sdk';
+import { ByteStack } from '@bytestack/sdk';
 
 async function main(): Promise<void> {
-  const client = new BitKit({ apiKey: process.env.BITKIT_API_KEY });
+  const client = new ByteStack({ apiKey: process.env.BITKIT_API_KEY });
 
   const result = await client.query({
     prompt: 'Show me trending hashtags related to AI on TikTok this month',

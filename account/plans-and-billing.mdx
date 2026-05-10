@@ -1,13 +1,13 @@
 ---
 title: "Plans and billing"
-description: "Understand BitKit's free tier, paid plan billing cycle, usage overages, failed payment handling, and how to cancel or export your data."
+description: "Understand ByteStack's free tier, paid plan billing cycle, usage overages, failed payment handling, and how to cancel or export your data."
 ---
 
-BitKit offers a free tier for getting started and paid plans for teams that need more queries, private sources, or advanced features. This page explains how billing works, what counts as a query, how failed payments are handled, and what happens to your data when you cancel.
+ByteStack offers a free tier for getting started and paid plans for teams that need more queries, private sources, or advanced features. This page explains how billing works, what counts as a query, how failed payments are handled, and what happens to your data when you cancel.
 
 ## Free tier
 
-The free tier includes **1,000 queries per month** against BitKit's public source list. There is no credit card required to sign up. If you reach your monthly limit, queries return a `429` error until the next billing cycle begins. You can upgrade to a paid plan at any time from **Settings → Billing**.
+The free tier includes **1,000 queries per month** against ByteStack's public source list. There is no credit card required to sign up. If you reach your monthly limit, queries return a `429` error until the next billing cycle begins. You can upgrade to a paid plan at any time from **Settings → Billing**.
 
 ## Paid plans
 
@@ -20,7 +20,7 @@ This means your first charge when upgrading covers the subscription for the curr
 
 ### What counts as a query
 
-Each call to `POST /v1/queries` counts as one query against your monthly allowance — regardless of how many records are returned or how many sources BitKit fetches from to fulfill it. Retries of the same request each count separately.
+Each call to `POST /v1/queries` counts as one query against your monthly allowance — regardless of how many records are returned or how many sources ByteStack fetches from to fulfill it. Retries of the same request each count separately.
 
 ### Upgrading or downgrading
 
@@ -28,11 +28,11 @@ You can change your plan at any time from **Settings → Billing**. Upgrades tak
 
 ## Failed payments
 
-If a payment fails, BitKit enters a **7-day grace period**:
+If a payment fails, ByteStack enters a **7-day grace period**:
 
 <Steps>
   <Step title="Payment fails">
-    Your card is declined or a charge cannot be collected. BitKit sends an email notification and retries automatically.
+    Your card is declined or a charge cannot be collected. ByteStack sends an email notification and retries automatically.
   </Step>
   <Step title="Grace period begins">
     For the 7 days following the failed charge, the API continues to accept requests but returns a `402 Payment Required` status on every response. Your integration will still function, but you should resolve billing as soon as possible.
@@ -49,7 +49,7 @@ If a payment fails, BitKit enters a **7-day grace period**:
 
 You can cancel your subscription at any time from **Dashboard → Settings → Billing → Cancel**.
 
-For paid plans, BitKit requires **30 days' notice** before termination takes effect. During that notice period, your plan remains active and you continue to have full access.
+For paid plans, ByteStack requires **30 days' notice** before termination takes effect. During that notice period, your plan remains active and you continue to have full access.
 
 After termination, your account enters a **60-day export-only window**. During this period you can download your data but cannot run new queries. After 60 days, all stored data — queries, outputs, and account records — is permanently purged.
 
@@ -62,5 +62,5 @@ After termination, your account enters a **60-day export-only window**. During t
 You can download a signed JSON archive of all your queries, account records, and audit events at any time from **Settings → Privacy → Export**. The archive is generated immediately — no support ticket required.
 
 <Note>
-  For questions about invoices, payment disputes, or billing adjustments, contact the BitKit billing team at [legal@bitkit.dev](mailto:legal@bitkit.dev). Responses are typically sent within three business days.
+  For questions about invoices, payment disputes, or billing adjustments, contact the ByteStack billing team at [legal@bytestack.dev](mailto:legal@bytestack.dev). Responses are typically sent within three business days.
 </Note>

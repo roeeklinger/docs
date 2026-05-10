@@ -1,9 +1,9 @@
 ---
 title: "Jobs and scheduling"
-description: "BitKit jobs let you run queries on a schedule. Learn how to create, configure, and monitor jobs that run automatically."
+description: "ByteStack jobs let you run queries on a schedule. Learn how to create, configure, and monitor jobs that run automatically."
 ---
 
-A BitKit job is a saved query that runs automatically on a schedule. Instead of manually re-running the same query every day or every few hours, you configure a job once and BitKit handles the rest — fetching fresh data at each interval, storing results in your project workspace, and keeping a full history of every run. Jobs are the foundation of any ongoing monitoring workflow, from brand mention tracking to competitive intelligence to automated data pipelines.
+A ByteStack job is a saved query that runs automatically on a schedule. Instead of manually re-running the same query every day or every few hours, you configure a job once and ByteStack handles the rest — fetching fresh data at each interval, storing results in your project workspace, and keeping a full history of every run. Jobs are the foundation of any ongoing monitoring workflow, from brand mention tracking to competitive intelligence to automated data pipelines.
 
 ## Creating a job
 
@@ -41,7 +41,7 @@ You can create a job from the dashboard or via the API.
 }
 ```
 
-The above example creates a job that runs every day at 08:00 UTC. BitKit stores each run's results in your project workspace under **Storage**.
+The above example creates a job that runs every day at 08:00 UTC. ByteStack stores each run's results in your project workspace under **Storage**.
 
 ## Schedule formats
 
@@ -84,7 +84,7 @@ You can pause, resume, or delete any job from **Dashboard → Jobs**.
 
 ## Result storage and run history
 
-Every time a job runs, BitKit stores the full result set in your project workspace. You can access results from:
+Every time a job runs, ByteStack stores the full result set in your project workspace. You can access results from:
 
 - **Dashboard → Storage** — browse raw result records from any job run
 - **Dashboard → Analytics** — view aggregated charts and summaries across runs
@@ -101,5 +101,5 @@ The job detail view also shows:
 In the Jobs tab, each active job displays its next scheduled run time. You can also trigger an immediate run at any time by clicking **Sync now** on the job detail page — this does not affect the regular schedule.
 
 <Tip>
-  Combine jobs with webhooks to get real-time alerts when new results arrive. Configure a webhook endpoint in your project settings, and BitKit will POST the results of each job run to your URL as soon as the fetch completes. This lets you trigger downstream workflows — Slack notifications, database writes, or custom pipelines — without polling the API.
+  Combine jobs with webhooks to get real-time alerts when new results arrive. Configure a webhook endpoint in your project settings, and ByteStack will POST the results of each job run to your URL as soon as the fetch completes. This lets you trigger downstream workflows — Slack notifications, database writes, or custom pipelines — without polling the API.
 </Tip>

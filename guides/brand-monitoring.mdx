@@ -1,9 +1,9 @@
 ---
 title: "Brand monitoring"
-description: "Use BitKit to track brand mentions on X, Reddit, LinkedIn, and more. Schedule recurring jobs and receive webhook alerts when each run completes."
+description: "Use ByteStack to track brand mentions on X, Reddit, LinkedIn, and more. Schedule recurring jobs and receive webhook alerts when each run completes."
 ---
 
-Brand monitoring in BitKit lets you ask a plain-English question about your brand and receive a structured count of mentions, unique users, and a per-source breakdown — all in one response. You can run these queries on demand or schedule them to run automatically, and configure a webhook to notify your team the moment results are ready.
+Brand monitoring in ByteStack lets you ask a plain-English question about your brand and receive a structured count of mentions, unique users, and a per-source breakdown — all in one response. You can run these queries on demand or schedule them to run automatically, and configure a webhook to notify your team the moment results are ready.
 
 ## Run a one-off brand mention query
 
@@ -14,7 +14,7 @@ Start by sending a single query to see how many times your brand was mentioned a
     Use the `/query` endpoint with a natural language prompt. Replace `YourBrand` with your actual brand name.
 
     ```bash
-    curl -X POST https://api.bitkit.dev/v1/queries \
+    curl -X POST https://api.bytestack.dev/v1/queries \
       -H "Authorization: Bearer $BITKIT_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -23,7 +23,7 @@ Start by sending a single query to see how many times your brand was mentioned a
       }'
     ```
 
-    BitKit returns a structured JSON response with mention counts per source.
+    ByteStack returns a structured JSON response with mention counts per source.
 
     ```json
     {
@@ -56,7 +56,7 @@ Start by sending a single query to see how many times your brand was mentioned a
   </Step>
 
   <Step title="Review results in the dashboard">
-    Open the **Dashboard** in your BitKit workspace. Navigate to **Jobs** and click the completed query to see:
+    Open the **Dashboard** in your ByteStack workspace. Navigate to **Jobs** and click the completed query to see:
 
     - **Total Mentions** — total number of times your brand appeared across all selected sources.
     - **Unique Users** — number of distinct users who authored those mentions.
@@ -76,18 +76,18 @@ Start by sending a single query to see how many times your brand was mentioned a
     }
     ```
 
-    This cron expression runs the job every day at 08:00 UTC. BitKit stores each run's results in **Storage** under a timestamped key so you can compare results over time.
+    This cron expression runs the job every day at 08:00 UTC. ByteStack stores each run's results in **Storage** under a timestamped key so you can compare results over time.
   </Step>
 
   <Step title="Set up a webhook notification">
-    Add a `webhook_url` to your job configuration. BitKit sends a POST request to that URL whenever a scheduled run completes.
+    Add a `webhook_url` to your job configuration. ByteStack sends a POST request to that URL whenever a scheduled run completes.
 
     ```json
     {
       "prompt": "How many times was YourBrand mentioned on X, Reddit, and LinkedIn in the last 7 days?",
       "sources": ["x", "reddit", "linkedin"],
       "schedule": "0 8 * * *",
-      "webhook_url": "https://your-service.example.com/hooks/bitkit"
+      "webhook_url": "https://your-service.example.com/hooks/bytestack"
     }
     ```
 

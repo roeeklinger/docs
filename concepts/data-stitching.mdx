@@ -1,13 +1,13 @@
 ---
 title: "Data stitching"
-description: "BitKit's data stitching automatically resolves the same person, company, or location across multiple sources into a single unified profile."
+description: "ByteStack's data stitching automatically resolves the same person, company, or location across multiple sources into a single unified profile."
 ---
 
-When you query multiple sources, the same real-world entity — a person, a company, a location — often appears in several places at once. A VP of Engineering might show up on LinkedIn with her job title, on GitHub with her repositories, and on Facebook with her city. Without any extra work on your part, BitKit's data stitching automatically detects that these records refer to the same individual and merges them into a single unified profile. This means you get a richer, more complete picture of each entity instead of fragmented, siloed records.
+When you query multiple sources, the same real-world entity — a person, a company, a location — often appears in several places at once. A VP of Engineering might show up on LinkedIn with her job title, on GitHub with her repositories, and on Facebook with her city. Without any extra work on your part, ByteStack's data stitching automatically detects that these records refer to the same individual and merges them into a single unified profile. This means you get a richer, more complete picture of each entity instead of fragmented, siloed records.
 
 ## How entity resolution works
 
-BitKit's stitching engine compares records across sources and looks for shared signals — names, usernames, profile photos, URLs, and contextual clues — to determine whether two records represent the same real-world entity. When confidence is high, BitKit merges the records and attaches the original source data as linked profiles.
+ByteStack's stitching engine compares records across sources and looks for shared signals — names, usernames, profile photos, URLs, and contextual clues — to determine whether two records represent the same real-world entity. When confidence is high, ByteStack merges the records and attaches the original source data as linked profiles.
 
 Stitching runs automatically on query results that span multiple sources. You do not need to configure it or call a separate endpoint.
 
@@ -27,7 +27,7 @@ Stitching runs automatically on query results that span multiple sources. You do
 
 ## Example: a person unified across four sources
 
-Consider a query that surfaces Sarah Chen across LinkedIn, Google, Facebook, and GitHub. Without stitching, you would receive four separate records. With stitching, BitKit identifies they all refer to the same person and returns a unified profile.
+Consider a query that surfaces Sarah Chen across LinkedIn, Google, Facebook, and GitHub. Without stitching, you would receive four separate records. With stitching, ByteStack identifies they all refer to the same person and returns a unified profile.
 
 **Raw records before stitching:**
 
@@ -73,7 +73,7 @@ Consider a query that surfaces Sarah Chen across LinkedIn, Google, Facebook, and
 }
 ```
 
-The top-level fields (`name`, `role`, `employer`, `location`) represent BitKit's resolved canonical values. The `sources` object preserves the original per-platform data so you can trace exactly where each field came from.
+The top-level fields (`name`, `role`, `employer`, `location`) represent ByteStack's resolved canonical values. The `sources` object preserves the original per-platform data so you can trace exactly where each field came from.
 
 ## Unified profile fields
 
@@ -88,9 +88,9 @@ The top-level fields (`name`, `role`, `employer`, `location`) represent BitKit's
 | `sources` | Object containing per-platform raw data |
 
 <Note>
-  Data stitching significantly improves signal quality in research queries. Instead of counting the same person as three separate mentions across LinkedIn, Google, and GitHub, BitKit counts them once and enriches the record with cross-platform context. This reduces noise and makes aggregated metrics more accurate.
+  Data stitching significantly improves signal quality in research queries. Instead of counting the same person as three separate mentions across LinkedIn, Google, and GitHub, ByteStack counts them once and enriches the record with cross-platform context. This reduces noise and makes aggregated metrics more accurate.
 </Note>
 
 ## When stitching applies
 
-Stitching runs automatically when your query spans two or more sources and returns records that share identifiable entity signals. If BitKit cannot resolve a match with sufficient confidence, it returns the records separately rather than risk an incorrect merge. You can always inspect the `sources` object on a unified profile to review the raw evidence used to stitch the entity.
+Stitching runs automatically when your query spans two or more sources and returns records that share identifiable entity signals. If ByteStack cannot resolve a match with sufficient confidence, it returns the records separately rather than risk an incorrect merge. You can always inspect the `sources` object on a unified profile to review the raw evidence used to stitch the entity.

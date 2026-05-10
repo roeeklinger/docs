@@ -1,15 +1,15 @@
 ---
 title: "API keys"
-description: "Generate, rotate, and revoke BitKit API keys. Learn key scopes, best practices for securing credentials, and how to use keys in requests."
+description: "Generate, rotate, and revoke ByteStack API keys. Learn key scopes, best practices for securing credentials, and how to use keys in requests."
 ---
 
-API keys are the primary way to authenticate requests to the BitKit API. Each key is a bearer token that identifies your account and determines what actions the caller is permitted to perform. You can create as many keys as you need — one per service, environment, or team member — and revoke them individually without affecting the rest.
+API keys are the primary way to authenticate requests to the ByteStack API. Each key is a bearer token that identifies your account and determines what actions the caller is permitted to perform. You can create as many keys as you need — one per service, environment, or team member — and revoke them individually without affecting the rest.
 
 ## Create an API key
 
 <Steps>
   <Step title="Open API key settings">
-    In the BitKit dashboard, go to **Settings → API Keys** and click **New Key**.
+    In the ByteStack dashboard, go to **Settings → API Keys** and click **New Key**.
   </Step>
   <Step title="Name your key">
     Give the key a descriptive name that identifies where it will be used — for example, `production-backend` or `ci-pipeline`. You cannot rename a key after creation.
@@ -18,7 +18,7 @@ API keys are the primary way to authenticate requests to the BitKit API. Each ke
     Select the minimum scope your integration needs. See [key scopes](#key-scopes) below.
   </Step>
   <Step title="Copy the key">
-    The full key value is shown **once**, immediately after creation. Copy it now and store it securely. BitKit does not display the full key again after you leave this screen.
+    The full key value is shown **once**, immediately after creation. Copy it now and store it securely. ByteStack does not display the full key again after you leave this screen.
   </Step>
 </Steps>
 
@@ -46,7 +46,7 @@ Include your API key in the `Authorization` header of every request as a bearer 
 
 ```bash curl
 curl --request POST \
-  --url https://api.bitkit.dev/v1/queries \
+  --url https://api.bytestack.dev/v1/queries \
   --header "Authorization: Bearer YOUR_API_KEY" \
   --header "Content-Type: application/json" \
   --data '{"prompt": "What is the sentiment around our brand on X this week?"}'
@@ -57,7 +57,7 @@ import os
 import httpx
 
 client = httpx.Client(
-    base_url="https://api.bitkit.dev",
+    base_url="https://api.bytestack.dev",
     headers={"Authorization": f"Bearer {os.environ['BITKIT_API_KEY']}"},
 )
 
@@ -71,7 +71,7 @@ print(response.json())
 ```typescript typescript
 import fetch from "node-fetch";
 
-const response = await fetch("https://api.bitkit.dev/v1/queries", {
+const response = await fetch("https://api.bytestack.dev/v1/queries", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${process.env.BITKIT_API_KEY}`,
@@ -102,7 +102,7 @@ func main() {
 		"prompt": "What is the sentiment around our brand on X this week?",
 	})
 
-	req, _ := http.NewRequest("POST", "https://api.bitkit.dev/v1/queries", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "https://api.bytestack.dev/v1/queries", bytes.NewBuffer(body))
 	req.Header.Set("Authorization", "Bearer "+os.Getenv("BITKIT_API_KEY"))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -150,5 +150,5 @@ To revoke a key, go to **Settings → API Keys**, click the key you want to remo
 </Warning>
 
 <Note>
-  If you suspect an API key has been compromised, revoke it immediately and create a replacement. Then audit the affected services to confirm no unauthorized requests were made. Contact [legal@bitkit.dev](mailto:legal@bitkit.dev) if you believe your account was accessed without authorization.
+  If you suspect an API key has been compromised, revoke it immediately and create a replacement. Then audit the affected services to confirm no unauthorized requests were made. Contact [legal@bytestack.dev](mailto:legal@bytestack.dev) if you believe your account was accessed without authorization.
 </Note>

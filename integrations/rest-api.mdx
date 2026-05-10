@@ -1,9 +1,9 @@
 ---
 title: "REST API"
-description: "Complete reference for the BitKit REST API. Covers query submission, job management, storage, and webhook registration with request/response examples."
+description: "Complete reference for the ByteStack REST API. Covers query submission, job management, storage, and webhook registration with request/response examples."
 ---
 
-The BitKit REST API gives you programmatic access to every capability on the platform — submitting natural language queries, scheduling recurring jobs, retrieving stored results, and registering webhooks. All requests are authenticated with a Bearer token and target the base URL `https://api.bitkit.dev/v1`.
+The ByteStack REST API gives you programmatic access to every capability on the platform — submitting natural language queries, scheduling recurring jobs, retrieving stored results, and registering webhooks. All requests are authenticated with a Bearer token and target the base URL `https://api.bytestack.dev/v1`.
 
 ## Authentication
 
@@ -53,7 +53,7 @@ Use the Queries resource to submit a natural language prompt against one or more
 
 ```bash cURL
 curl --request POST \
-  --url https://api.bitkit.dev/v1/queries \
+  --url https://api.bytestack.dev/v1/queries \
   --header 'Authorization: Bearer YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -105,7 +105,7 @@ Retrieve the status and results of a previously submitted query.
 
 ```bash cURL
 curl --request GET \
-  --url https://api.bitkit.dev/v1/queries/qry_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --url https://api.bytestack.dev/v1/queries/qry_01hx9jk2p4n5m6r7s8t9u0v1w \
   --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
@@ -152,7 +152,7 @@ curl --request GET \
   "result": {
     "summary": "Acme was mentioned 1,284 times across X and Reddit this week, with 62% positive sentiment.",
     "total_results": 1284,
-    "result_url": "https://api.bitkit.dev/v1/storage/qry_01hx9jk2p4n5m6r7s8t9u0v1w/result.json",
+    "result_url": "https://api.bytestack.dev/v1/storage/qry_01hx9jk2p4n5m6r7s8t9u0v1w/result.json",
     "records": []
   }
 }
@@ -170,7 +170,7 @@ Jobs let you schedule a query to run automatically on a cron schedule. Each run 
 
 ```bash cURL
 curl --request GET \
-  --url https://api.bitkit.dev/v1/jobs \
+  --url https://api.bytestack.dev/v1/jobs \
   --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
@@ -219,7 +219,7 @@ curl --request GET \
 
 ```bash cURL
 curl --request POST \
-  --url https://api.bitkit.dev/v1/jobs \
+  --url https://api.bytestack.dev/v1/jobs \
   --header 'Authorization: Bearer YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -227,7 +227,7 @@ curl --request POST \
     "prompt": "How many times was Acme mentioned on X today?",
     "sources": ["x"],
     "schedule": "0 8 * * *",
-    "webhook_url": "https://yourapp.example.com/webhooks/bitkit"
+    "webhook_url": "https://yourapp.example.com/webhooks/bytestack"
   }'
 ```
 
@@ -270,7 +270,7 @@ Pause or resume a job, change its schedule, or update its webhook URL.
 
 ```bash cURL
 curl --request PATCH \
-  --url https://api.bitkit.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --url https://api.bytestack.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
   --header 'Authorization: Bearer YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -300,7 +300,7 @@ curl --request PATCH \
 
 ```bash cURL
 curl --request DELETE \
-  --url https://api.bitkit.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --url https://api.bytestack.dev/v1/jobs/job_01hx9jk2p4n5m6r7s8t9u0v1w \
   --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
@@ -317,7 +317,7 @@ curl --request DELETE \
 
 ## Storage
 
-BitKit stores every job run result as a file you can list and download through the API or the dashboard Storage tab.
+ByteStack stores every job run result as a file you can list and download through the API or the dashboard Storage tab.
 
 ### List result files
 
@@ -325,7 +325,7 @@ BitKit stores every job run result as a file you can list and download through t
 
 ```bash cURL
 curl --request GET \
-  --url https://api.bitkit.dev/v1/storage \
+  --url https://api.bytestack.dev/v1/storage \
   --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
@@ -355,7 +355,7 @@ curl --request GET \
 
 ```bash cURL
 curl --request GET \
-  --url 'https://api.bitkit.dev/v1/storage/job_01hx9jk2p4n5m6r7s8t9u0v1w%2F2026-04-30T08%3A00%3A00Z.json' \
+  --url 'https://api.bytestack.dev/v1/storage/job_01hx9jk2p4n5m6r7s8t9u0v1w%2F2026-04-30T08%3A00%3A00Z.json' \
   --header 'Authorization: Bearer YOUR_API_KEY' \
   --output result.json
 ```
@@ -373,7 +373,7 @@ Register an endpoint to receive POST callbacks when job runs complete.
 ### Register a webhook
 
 <ParamField body="url" type="string" required>
-  The HTTPS endpoint BitKit should POST results to.
+  The HTTPS endpoint ByteStack should POST results to.
 </ParamField>
 
 <ParamField body="events" type="string[]">
@@ -384,11 +384,11 @@ Register an endpoint to receive POST callbacks when job runs complete.
 
 ```bash cURL
 curl --request POST \
-  --url https://api.bitkit.dev/v1/webhooks \
+  --url https://api.bytestack.dev/v1/webhooks \
   --header 'Authorization: Bearer YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
-    "url": "https://yourapp.example.com/webhooks/bitkit",
+    "url": "https://yourapp.example.com/webhooks/bytestack",
     "events": ["job.completed"]
   }'
 ```
@@ -398,7 +398,7 @@ curl --request POST \
 ```json
 {
   "id": "wh_01hx9jk2p4n5m6r7s8t9u0v1w",
-  "url": "https://yourapp.example.com/webhooks/bitkit",
+  "url": "https://yourapp.example.com/webhooks/bytestack",
   "events": ["job.completed"],
   "created_at": "2026-04-30T14:10:00Z"
 }
@@ -416,7 +416,7 @@ curl --request POST \
 
 ```bash cURL
 curl --request DELETE \
-  --url https://api.bitkit.dev/v1/webhooks/wh_01hx9jk2p4n5m6r7s8t9u0v1w \
+  --url https://api.bytestack.dev/v1/webhooks/wh_01hx9jk2p4n5m6r7s8t9u0v1w \
   --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
@@ -433,7 +433,7 @@ curl --request DELETE \
 
 ## Error codes
 
-BitKit uses standard HTTP status codes. All error responses include a JSON body with a `code` and `message` field.
+ByteStack uses standard HTTP status codes. All error responses include a JSON body with a `code` and `message` field.
 
 ```json
 {
@@ -452,4 +452,4 @@ BitKit uses standard HTTP status codes. All error responses include a JSON body 
 | `403 Forbidden` | Your API key does not have permission to perform this action. |
 | `404 Not Found` | The requested resource does not exist. |
 | `429 Too Many Requests` | You have exceeded your rate limit. Respect the `Retry-After` header. |
-| `500 Internal Server Error` | An unexpected error occurred on BitKit's servers. Contact support if it persists. |
+| `500 Internal Server Error` | An unexpected error occurred on ByteStack's servers. Contact support if it persists. |

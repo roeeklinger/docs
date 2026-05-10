@@ -1,7 +1,7 @@
 {
   "projectType": "saas",
-  "projectName": "BitKit",
-  "projectDescription": "BitKit is an AI-powered platform that lets you query the open web in natural language, automatically fetching, analyzing, and visualizing data from 13,000+ sources across social media and the broader web.",
+  "projectName": "ByteStack",
+  "projectDescription": "ByteStack is an AI-powered platform that lets you query the open web in natural language, automatically fetching, analyzing, and visualizing data from 13,000+ sources across social media and the broader web.",
   "theme": "luma",
   "primaryColor": "#6366F1",
   "lightColor": "#EEF2FF",
@@ -79,8 +79,8 @@
     "GET /storage — list stored result files",
     "GET /storage/{key} — download a result file",
     "POST /webhooks — register a webhook endpoint",
-    "Python SDK: bitkit.query(prompt, sources=...)",
-    "TypeScript SDK: bitkit.query(prompt, options)",
-    "Go SDK: bitkit.Query(ctx, prompt, opts)"
+    "Python SDK: bytestack.query(prompt, sources=...)",
+    "TypeScript SDK: bytestack.query(prompt, options)",
+    "Go SDK: bytestack.Query(ctx, prompt, opts)"
   ]
 }
